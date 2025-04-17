@@ -1,0 +1,1668 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 246 100% 60%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 246 100% 60%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 246 100% 60%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 246 100% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Nunito Sans", sans-serif;
+  }
+}
+
+body {
+  background: linear-gradient(135deg, #f3e8ff, #e0e7ff);
+  background-attachment: fixed;
+  color: #1f2937;
+  min-height: 100vh;
+}
+
+/* Background pattern */
+.bg-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Logo specific styles */
+.logo-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .logo-container {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 375px) {
+  .logo-container {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 320px) {
+  .logo-container {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.logo-svg {
+  width: 70%;
+  height: 70%;
+}
+
+/* Add this to the existing CSS file to ensure the brand name fits properly on small screens */
+@media (max-width: 375px) {
+  .brand-name {
+    max-width: 150px;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .brand-name {
+    max-width: 120px;
+    font-size: 0.875rem;
+  }
+}
+
+/* Rest of the CSS */
+.cloud-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%236366f1' fill-opacity='0.1' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,202.7C672,203,768,181,864,181.3C960,181,1056,203,1152,208C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+/* Update the trip type selector styling for better responsiveness */
+/* Trip type selector styling */
+.trip-type-selector {
+  background-color: rgba(99, 102, 241, 0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 9999px;
+  padding: 4px;
+  display: inline-flex;
+  margin: 0 auto;
+  width: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.trip-type-button {
+  color: #4b5563;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 0;
+  flex: 1;
+}
+
+@media (max-width: 375px) {
+  .trip-type-selector {
+    padding: 3px;
+    width: 100%;
+  }
+
+  .trip-type-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .trip-type-selector {
+    padding: 3px;
+    width: 100%;
+  }
+
+  .trip-type-button {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 280px) {
+  .trip-type-selector {
+    padding: 2px;
+    width: 100%;
+  }
+
+  .trip-type-button {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.7rem;
+    min-width: 0;
+  }
+}
+
+/* Active state styling */
+.trip-type-button.active {
+  background-color: white;
+  color: #4f46e5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+/* Add these new styles for ultra-small screens */
+@media (max-width: 240px) {
+  .trip-type-selector {
+    padding: 2px;
+    width: 100%;
+  }
+
+  .trip-type-button {
+    padding: 0.2rem 0.25rem;
+    font-size: 0.65rem;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Extreme optimization for trip type selector on tiny screens */
+@media (max-width: 359px) {
+  .trip-type-selector {
+    padding: 2px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .trip-type-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+}
+
+@media (max-width: 320px) {
+  .trip-type-selector {
+    padding: 2px;
+  }
+
+  .trip-type-button {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 280px) {
+  .trip-type-selector {
+    padding: 1px;
+  }
+
+  .trip-type-button {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.55rem;
+  }
+}
+
+/* Search form styling */
+.search-form-desktop {
+  background-color: white;
+  border-radius: 9999px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 4px 0 0;
+  box-shadow: 0 8px 16px rgba(79, 70, 229, 0.15);
+}
+
+.search-form-mobile {
+  background-color: white;
+  border-radius: 24px;
+  padding: 0;
+  box-shadow: 0 8px 16px rgba(79, 70, 229, 0.15);
+  overflow: hidden;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+@media (max-width: 320px) {
+  .search-form-mobile {
+    border-radius: 16px;
+  }
+}
+
+.form-field {
+  position: relative;
+}
+
+.form-field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+  padding-left: 0;
+}
+
+@media (max-width: 320px) {
+  .form-field-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.125rem;
+  }
+}
+
+.form-field-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  background-color: transparent;
+  font-weight: 500;
+  height: auto;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.form-field-icon {
+  color: #6b7280;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+  min-width: 20px;
+}
+
+@media (max-width: 320px) {
+  .form-field-icon {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 0.25rem;
+    min-width: 16px;
+  }
+}
+
+.form-field-text {
+  flex: 1;
+  color: #111827;
+  font-weight: 500;
+  font-size: 1.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+@media (max-width: 375px) {
+  .form-field-text {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .form-field-text {
+    font-size: 0.875rem;
+  }
+}
+
+.form-field-code {
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+  background-color: rgba(79, 70, 229, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+@media (max-width: 375px) {
+  .form-field-code {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    min-width: 3rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .form-field-code {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    min-width: 2.5rem;
+    margin-left: 0.25rem;
+  }
+}
+
+/* Extreme reduction for tiny screens */
+@media (max-width: 320px) {
+  .form-field-label {
+    font-size: 0.65rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .form-field-text {
+    font-size: 0.75rem;
+  }
+
+  .form-field-code {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.3rem;
+    min-width: 2.25rem;
+  }
+
+  .form-field-icon {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px;
+  }
+}
+
+@media (max-width: 280px) {
+  .form-field-label {
+    font-size: 0.6rem;
+  }
+
+  .form-field-text {
+    font-size: 0.7rem;
+  }
+
+  .form-field-code {
+    font-size: 0.6rem;
+    padding: 0.05rem 0.25rem;
+    min-width: 2rem;
+    margin-left: 0.2rem;
+  }
+
+  .form-field-icon {
+    width: 12px !important;
+    height: 12px !important;
+    min-width: 12px;
+    margin-right: 0.15rem;
+  }
+}
+
+/* Standard swap button styling */
+.standard-swap-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.desktop-standard-swap-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.standard-swap-button {
+  width: 32px;
+  height: 32px;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.standard-swap-button:hover {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.standard-swap-button:active {
+  transform: scale(0.95);
+}
+
+.search-button-desktop {
+  width: 3rem;
+  height: 3rem;
+  background-color: #4f46e5;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-left: 0.5rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
+}
+
+.search-button-mobile {
+  width: 100%;
+  background-color: #4f46e5;
+  border-radius: 9999px;
+  padding: 0.875rem;
+  color: white;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  height: 56px;
+  font-size: 1.125rem;
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
+}
+
+@media (max-width: 375px) {
+  .search-button-mobile {
+    height: 48px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .search-button-mobile {
+    height: 40px;
+    font-size: 0.875rem;
+    padding: 0.625rem;
+  }
+}
+
+.search-button-desktop:hover,
+.search-button-mobile:hover {
+  background-color: #4338ca;
+}
+
+/* Trustpilot styling - updated for dark text on light background */
+.trustpilot-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.trustpilot-stars {
+  background-color: #00b67a;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trustpilot-star {
+  color: white;
+  fill: white;
+  width: 1rem;
+  height: 1rem;
+}
+
+.trustpilot-logo {
+  color: #00b67a;
+  fill: #00b67a;
+}
+
+.desktop-field {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 1.25rem;
+  position: relative;
+}
+
+.desktop-field:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background-color: #e5e7eb;
+}
+
+.desktop-field-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.125rem;
+}
+
+.desktop-field-content {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #111827;
+  font-size: 0.9375rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.desktop-field-icon {
+  color: #9ca3af;
+  margin-right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.desktop-field-code {
+  color: #4f46e5;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  font-size: 0.9375rem;
+  flex-shrink: 0;
+}
+
+/* Mobile specific styles */
+
+/* Mobile form field styling */
+.mobile-form-field {
+  padding: 16px 24px;
+  position: relative;
+}
+
+@media (max-width: 375px) {
+  .mobile-form-field {
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 320px) {
+  .mobile-form-field {
+    padding: 10px 12px;
+  }
+}
+
+/* Ensure the form fields have proper spacing between them */
+.mobile-form-field:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Improve the grid layout for date and passengers fields */
+.mobile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+/* Ensure proper spacing in the mobile form grid */
+.mobile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+@media (max-width: 320px) {
+  .mobile-form-grid .mobile-form-field {
+    padding: 8px 10px;
+  }
+}
+
+/* Fix for the passengers field to ensure it's fully visible */
+.mobile-form-grid .mobile-form-field {
+  padding: 16px 24px;
+  min-width: 0; /* Ensure the field can shrink if needed */
+}
+
+@media (max-width: 375px) {
+  .mobile-form-grid .mobile-form-field {
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 320px) {
+  .mobile-form-grid .mobile-form-field {
+    padding: 10px 12px;
+  }
+}
+
+.mobile-form-grid .mobile-form-field:first-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: none;
+}
+
+/* Improve the search button container spacing */
+.mobile-search-button-container {
+  padding: 16px 24px 24px;
+}
+
+@media (max-width: 375px) {
+  .mobile-search-button-container {
+    padding: 14px 16px 20px;
+  }
+}
+
+@media (max-width: 320px) {
+  .mobile-search-button-container {
+    padding: 10px 12px 16px;
+  }
+}
+
+/* Date field specific styles */
+.date-field-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Improve the passengers field display */
+.passengers-field-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-size: 1rem; /* Match the screenshot exactly */
+}
+
+@media (max-width: 375px) {
+  .passengers-field-text {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .passengers-field-text {
+    font-size: 0.875rem;
+  }
+}
+
+/* Enhanced Popover content styling for mobile */
+.popover-content {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  z-index: 50;
+}
+
+@media (max-width: 320px) {
+  .popover-content {
+    width: 280px !important;
+    max-width: 280px !important;
+  }
+}
+
+/* Airport search command styling */
+.command-input {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+}
+
+.command-input input {
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 320px) {
+  .command-input {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .command-input input {
+    font-size: 0.8125rem;
+  }
+}
+
+.airport-command-list {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.airport-command-item {
+  padding: 10px 12px;
+}
+
+.airport-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+@media (max-width: 375px) {
+  .airport-name {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 320px) {
+  .airport-name {
+    max-width: 120px;
+  }
+}
+
+/* Enhanced Calendar styling for mobile */
+.date-popover {
+  width: 300px !important;
+  max-width: 300px !important;
+}
+
+@media (max-width: 375px) {
+  .date-popover {
+    width: 280px !important;
+    max-width: 280px !important;
+  }
+}
+
+@media (max-width: 320px) {
+  .date-popover {
+    width: 260px !important;
+    max-width: 260px !important;
+  }
+}
+
+.calendar-wrapper {
+  padding: 0.75rem;
+}
+
+@media (max-width: 320px) {
+  .calendar-wrapper {
+    padding: 0.5rem;
+  }
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
+}
+
+.calendar-month-title {
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 320px) {
+  .calendar-month-title {
+    font-size: 0.875rem;
+  }
+}
+
+.calendar-nav-button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.calendar-nav-button:hover {
+  background-color: #e5e7eb;
+}
+
+.calendar-day {
+  font-size: 0.875rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 375px) {
+  .calendar-day {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 320px) {
+  .calendar-day {
+    font-size: 0.75rem;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.calendar-day.selected {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.calendar-day.range {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+.calendar-head-cell {
+  font-size: 0.75rem;
+  color: #6b7280;
+  padding: 0.5rem 0;
+  text-align: center;
+}
+
+.calendar-cell {
+  padding: 0;
+  text-align: center;
+}
+
+.calendar-month {
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+
+.calendar-caption {
+  display: none;
+}
+
+.calendar-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.calendar-done-button {
+  background-color: #4f46e5;
+  color: white;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+}
+
+.calendar-done-button:hover {
+  background-color: #4338ca;
+}
+
+/* Enhanced Passengers popover styling for mobile */
+.passengers-popover {
+  padding: 0;
+  width: 300px !important;
+  max-width: 300px !important;
+}
+
+@media (max-width: 375px) {
+  .passengers-popover {
+    width: 280px !important;
+    max-width: 280px !important;
+  }
+}
+
+@media (max-width: 320px) {
+  .passengers-popover {
+    width: 260px !important;
+    max-width: 260px !important;
+  }
+}
+
+.passengers-content {
+  padding: 1rem;
+}
+
+.passengers-section {
+  margin-bottom: 1rem;
+}
+
+.passengers-section-title {
+  font-weight: 500;
+  font-size: 0.9375rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 320px) {
+  .passengers-section-title {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.passengers-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.passengers-type {
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 320px) {
+  .passengers-type {
+    font-size: 0.875rem;
+  }
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 320px) {
+  .counter-controls {
+    gap: 0.5rem;
+  }
+}
+
+/* Improved counter buttons for better touch targets */
+.counter-button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.125rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 320px) {
+  .counter-button {
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    min-height: 2rem;
+    font-size: 1rem;
+  }
+}
+
+.counter-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.counter-value {
+  width: 2rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+@media (max-width: 320px) {
+  .counter-value {
+    width: 1.5rem;
+    font-size: 0.9375rem;
+  }
+}
+
+.cabin-class-section {
+  margin-bottom: 1rem;
+}
+
+.cabin-class-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Improved cabin class options for small screens */
+.cabin-class-option {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  font-size: 0.9375rem;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+}
+
+@media (max-width: 320px) {
+  .cabin-class-option {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+.cabin-class-option:hover {
+  background-color: #f3f4f6;
+}
+
+.cabin-class-option.selected {
+  background-color: #ebe9fe;
+  color: #4f46e5;
+  border-color: #c7d2fe;
+}
+
+.done-button {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: #4f46e5;
+  color: white;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 320px) {
+  .done-button {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+}
+
+.done-button:hover {
+  background-color: #4338ca;
+}
+
+/* Multi-city form styles - Mobile */
+.multi-city-form {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.multi-city-flight-segment {
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.multi-city-flight-segment:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.multi-city-segment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px 8px;
+}
+
+@media (max-width: 375px) {
+  .multi-city-segment-header {
+    padding: 10px 16px 6px;
+  }
+}
+
+@media (max-width: 320px) {
+  .multi-city-segment-header {
+    padding: 8px 12px 4px;
+  }
+}
+
+.multi-city-segment-title {
+  font-weight: 600;
+  color: #4f46e5;
+  font-size: 1rem;
+}
+
+@media (max-width: 375px) {
+  .multi-city-segment-title {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .multi-city-segment-title {
+    font-size: 0.875rem;
+  }
+}
+
+.multi-city-remove-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: none;
+  cursor: pointer;
+}
+
+.multi-city-remove-button:hover {
+  background-color: #fecaca;
+}
+
+.multi-city-segment-divider {
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+  margin: 8px 0;
+}
+
+.multi-city-add-flight-container {
+  padding: 12px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 375px) {
+  .multi-city-add-flight-container {
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 320px) {
+  .multi-city-add-flight-container {
+    padding: 8px 12px;
+  }
+}
+
+.multi-city-add-flight-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #ebe9fe;
+  color: #4f46e5;
+  font-weight: 500;
+  border: 1px dashed #c7d2fe;
+  cursor: pointer;
+}
+
+.multi-city-add-flight-button:hover {
+  background-color: #ddd6fe;
+}
+
+.multi-city-add-flight-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Multi-city form styles - Desktop */
+.search-form-desktop-multi-city {
+  background-color: white;
+  border-radius: 16px;
+  padding: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 8px 16px rgba(79, 70, 229, 0.15);
+}
+
+.multi-city-flight-segment-desktop {
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.multi-city-segment-header-desktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.multi-city-segment-title-desktop {
+  font-weight: 600;
+  color: #4f46e5;
+  font-size: 1rem;
+}
+
+.multi-city-remove-button-desktop {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: none;
+  cursor: pointer;
+}
+
+.multi-city-remove-button-desktop:hover {
+  background-color: #fecaca;
+}
+
+.multi-city-segment-content-desktop {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.multi-city-field-desktop {
+  position: relative;
+}
+
+.multi-city-swap-desktop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.multi-city-add-flight-container-desktop {
+  padding: 8px 0 16px;
+}
+
+.multi-city-add-flight-button-desktop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #ebe9fe;
+  color: #4f46e5;
+  font-weight: 500;
+  border: 1px dashed #c7d2fe;
+  cursor: pointer;
+  margin: 0 auto;
+}
+
+.multi-city-add-flight-button-desktop:hover {
+  background-color: #ddd6fe;
+}
+
+.multi-city-add-flight-button-desktop:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.multi-city-footer-desktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  gap: 16px;
+}
+
+.multi-city-passengers-desktop {
+  flex: 1;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.multi-city-search-button-desktop {
+  background-color: #4f46e5;
+  color: white;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.multi-city-search-button-desktop:hover {
+  background-color: #4338ca;
+}
+
+/* Add these styles to the end of the file */
+
+/* Ensure the form container is properly sized on mobile */
+.search-form-mobile {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Ensure the trip type selector doesn't overflow */
+@media (max-width: 320px) {
+  .trip-type-selector {
+    padding: 3px;
+    justify-content: center;
+  }
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 375px) {
+  .form-field-input,
+  .desktop-field-content,
+  .cabin-class-option,
+  .counter-button,
+  .done-button {
+    min-height: 44px; /* Minimum touch target size */
+  }
+}
+
+/* Ensure proper spacing in the mobile form grid */
+.mobile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+@media (max-width: 320px) {
+  .mobile-form-grid .mobile-form-field {
+    padding: 8px 10px;
+  }
+}
+
+/* Ensure the swap button is properly sized and positioned */
+@media (max-width: 320px) {
+  .standard-swap-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .standard-swap-button-container {
+    padding: 0 4px;
+  }
+}
+
+/* Ensure the search button container has proper spacing */
+@media (max-width: 320px) {
+  .mobile-search-button-container {
+    padding: 8px 12px 12px;
+  }
+}
+
+/* Optimize calendar for very small screens */
+@media (max-width: 320px) {
+  .calendar-wrapper {
+    padding: 0.375rem;
+  }
+
+  .calendar-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .calendar-month-title {
+    font-size: 0.8125rem;
+  }
+
+  .calendar-nav-button {
+    width: 24px;
+    height: 24px;
+  }
+
+  .calendar-head-cell {
+    font-size: 0.6875rem;
+    padding: 0.375rem 0;
+  }
+}
+
+/* Ensure the passengers popover content is properly sized */
+@media (max-width: 320px) {
+  .passengers-content {
+    padding: 0.75rem;
+  }
+
+  .passengers-section-title {
+    font-size: 0.8125rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .passengers-type {
+    font-size: 0.8125rem;
+  }
+
+  .done-button {
+    padding: 0.5rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Ensure multi-city form elements are properly sized */
+@media (max-width: 320px) {
+  .multi-city-add-flight-container {
+    padding: 6px 10px;
+  }
+
+  .multi-city-remove-button {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Ensure form fields don't overflow on tiny screens */
+@media (max-width: 280px) {
+  .form-field-text {
+    font-size: 0.75rem;
+  }
+
+  .form-field-code {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.25rem;
+    min-width: 2rem;
+  }
+
+  .form-field-icon {
+    width: 14px !important;
+    height: 14px !important;
+    margin-right: 0.125rem;
+    min-width: 14px;
+  }
+
+  .trip-type-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+  }
+}
+
+/* Ensure form container never causes horizontal scroll */
+.search-form-mobile {
+  width: 100vw;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* Ensure no horizontal scrolling */
+@media (max-width: 280px) {
+  /* Make all padding even smaller */
+  .mobile-form-field {
+    padding: 6px 8px;
+  }
+
+  .mobile-form-grid .mobile-form-field {
+    padding: 6px 8px;
+  }
+
+  .mobile-search-button-container {
+    padding: 6px 8px 10px;
+  }
+
+  /* Make buttons smaller */
+  .search-button-mobile {
+    height: 36px;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  /* Shrink swap button */
+  .standard-swap-button {
+    width: 24px;
+    height: 24px;
+  }
+
+  .standard-swap-button-container {
+    padding: 0 2px;
+  }
+
+  .standard-swap-button .h-4 {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Update multi-city styles */
+  .multi-city-segment-header {
+    padding: 6px 8px 4px;
+  }
+
+  .multi-city-segment-title {
+    font-size: 0.75rem;
+  }
+
+  .multi-city-remove-button {
+    width: 20px;
+    height: 20px;
+  }
+
+  .multi-city-add-flight-container {
+    padding: 6px 8px;
+  }
+
+  .multi-city-add-flight-button {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+/*
+Add
+  these
+  styles
+  to
+  ensure
+  proper
+  spacing
+  across
+  all
+  pages
+  with
+  fixed
+  headers 
+*/
+/* Add these styles at the end of the file */
+
+/* Fixed header spacing adjustments */
+.fixed-header-spacing {
+  padding-top: 80px; /* Default for mobile */
+}
+
+@media (min-width: 768px) {
+  .fixed-header-spacing {
+    padding-top: 96px; /* Larger spacing for desktop */
+  }
+}
+
+/* Ensure proper z-index layering */
+.z-header {
+  z-index: 50;
+}
+
+.z-search-summary {
+  z-index: 40;
+}
+
+.z-content {
+  z-index: 30;
+}
+
+/* Ensure content doesn't get cut off at the bottom */
+.min-content-height {
+  min-height: calc(100vh - 80px);
+}
+
+@media (min-width: 768px) {
+  .min-content-height {
+    min-height: calc(100vh - 96px);
+  }
+}
+
+/* Airport Search Styles */
+.airport-suggestion {
+  transition: background-color 0.15s ease;
+}
+
+.airport-suggestion:hover {
+  background-color: rgba(124, 58, 237, 0.05);
+}
+
+.airport-suggestion-focused {
+  background-color: rgba(124, 58, 237, 0.1);
+}
+
+.airport-highlight {
+  background-color: rgba(124, 58, 237, 0.2);
+  color: rgb(91, 33, 182);
+  font-weight: 500;
+}
+
+.airport-dropdown {
+  animation: fadeIn 0.2s ease-out;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+}
+
+.airport-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.airport-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.airport-dropdown::-webkit-scrollbar-thumb {
+  background-color: rgba(124, 58, 237, 0.3);
+  border-radius: 3px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
