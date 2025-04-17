@@ -19,6 +19,7 @@ import { Search, CheckCircle, Plane, Tag, XCircle, Armchair, Award } from "lucid
 import Image from "next/image"
 import { TravelInspiration } from "@/components/travel-inspiration"
 import { TravelTips } from "@/components/travel-tips"
+import { SpecialOffers } from "@/components/special-offers"
 
 export default function Home() {
   const [mounted, setMounted] = useState(false)
@@ -180,71 +181,9 @@ export default function Home() {
           </section>
 
           {/* Special Offers Section */}
-          <section className="py-16 px-4 bg-gray-50" aria-labelledby="special-offers-heading">
+          <section className="py-16 px-4 bg-white" aria-labelledby="special-offers-heading">
             <div className="container mx-auto">
-              <div className="text-center mb-12">
-                <h2 id="special-offers-heading" className="text-3xl font-bold mb-4 text-gray-800">
-                  Special Offers
-                </h2>
-                <p className="text-gray-600 max-w-3xl mx-auto">
-                  Take advantage of our limited-time deals and save on your next adventure.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[
-                  {
-                    title: "Early Bird Discount",
-                    description: "Book 60 days in advance and save up to 20% on international flights.",
-                    icon: Clock,
-                    color: "bg-blue-100 text-blue-600",
-                    cta: "Book Now",
-                    badge: "Popular",
-                  },
-                  {
-                    title: "Summer Getaway",
-                    description: "Special summer packages with complimentary hotel stays on select destinations.",
-                    icon: Gift,
-                    color: "bg-purple-100 text-purple-600",
-                    cta: "View Packages",
-                    badge: "Limited Time",
-                  },
-                  {
-                    title: "Loyalty Bonus",
-                    description: "Earn double points on all bookings made this month. Redeem for future travel.",
-                    icon: Star,
-                    color: "bg-indigo-100 text-indigo-600",
-                    cta: "Learn More",
-                    badge: null,
-                  },
-                ].map((offer, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardContent className="p-0">
-                      <div className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className={`w-12 h-12 rounded-full ${offer.color} flex items-center justify-center`}>
-                            <offer.icon className="w-6 h-6" />
-                          </div>
-                          {offer.badge && (
-                            <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-                              {offer.badge}
-                            </Badge>
-                          )}
-                        </div>
-                        <h3 className="text-xl font-bold mb-2">{offer.title}</h3>
-                        <p className="text-gray-600 mb-6">{offer.description}</p>
-                        <Button
-                          variant="outline"
-                          className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-                          aria-label={offer.cta}
-                        >
-                          {offer.cta}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <SpecialOffers />
             </div>
           </section>
 
@@ -384,7 +323,7 @@ export default function Home() {
                     toCode: "LHR",
                     price: "399",
                     duration: "7h 20m",
-                    image: "/placeholder.svg?height=120&width=300",
+                    image: "/images/flights/1.jpg",
                   },
                   {
                     from: "Los Angeles",
@@ -393,7 +332,7 @@ export default function Home() {
                     toCode: "HND",
                     price: "799",
                     duration: "11h 15m",
-                    image: "/placeholder.svg?height=120&width=300",
+                    image: "/images/flights/2.jpg",
                   },
                   {
                     from: "Chicago",
@@ -402,7 +341,7 @@ export default function Home() {
                     toCode: "CDG",
                     price: "449",
                     duration: "8h 30m",
-                    image: "/placeholder.svg?height=120&width=300",
+                    image: "/images/flights/3.jpg",
                   },
                   {
                     from: "Miami",
@@ -411,7 +350,7 @@ export default function Home() {
                     toCode: "CUN",
                     price: "199",
                     duration: "1h 45m",
-                    image: "/placeholder.svg?height=120&width=300",
+                    image: "/images/flights/4.jpg",
                   },
                   {
                     from: "San Francisco",
@@ -420,7 +359,7 @@ export default function Home() {
                     toCode: "SYD",
                     price: "899",
                     duration: "14h 35m",
-                    image: "/placeholder.svg?height=120&width=300",
+                    image: "/images/flights/5.jpg",
                   },
                   {
                     from: "Boston",
@@ -429,7 +368,7 @@ export default function Home() {
                     toCode: "DUB",
                     price: "349",
                     duration: "6h 20m",
-                    image: "/placeholder.svg?height=120&width=300",
+                    image: "/images/flights/6.jpg",
                   },
                 ].map((route, index) => (
                   <div
@@ -439,7 +378,7 @@ export default function Home() {
                     <div className="relative h-24 bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
                       <div className="absolute inset-0 opacity-20">
                         <Image
-                          src={route.image || "/placeholder.svg"}
+                          src={route.image}
                           alt={`${route.from} to ${route.to}`}
                           fill
                           className="object-cover"

@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, ArrowLeftRight, MapPin, Calendar, User, ChevronLeft, ChevronRight, Plus, Trash2, Users2, Minus, ChevronDown } from 'lucide-react'
@@ -13,11 +11,12 @@ import { Button } from "@/components/ui/button"
 import { searchAirports } from "@/app/actions/airport-actions"
 import { searchFlightsAction } from "@/app/actions/flight-actions"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { AirportSearch } from './airport-search'
+import { SimpleAirportSearch } from './SimpleAirportSearch'
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { PassengersSelector } from "@/components/passengers-selector"
 import { DateRange } from "react-day-picker"
+import { AirportSearchWrapper } from './AirportSearchWrapper'
 
 declare global {
   interface Window {
@@ -31,14 +30,13 @@ export function FlightSearchForm() {
   const isSmallMobile = useMediaQuery("(max-width: 375px)")
   const isTinyMobile = useMediaQuery("(max-width: 320px)")
   const isExtremelySmallMobile = useMediaQuery("(max-width: 280px)")
-  const isUltraSmallMobile = useMediaQuery("(max-width: 240px)") // Add this new breakpoint
   const [tripType, setTripType] = useState("return")
   const [originCity, setOriginCity] = useState("Orlando")
   const [originCode, setOriginCode] = useState("MCO")
   const [destinationCity, setDestinationCity] = useState("San Francisco")
   const [destinationCode, setDestinationCode] = useState("SFO")
-  const [startDate, setStartDate] = useState<Date>(new Date(2025, 3, 28)) // April 28, 2025
-  const [endDate, setEndDate] = useState<Date>(new Date(2025, 3, 29)) // April 29, 2025
+  const [startDate, setStartDate] = useState<Date>(new Date(2025, 3, 28))
+  const [endDate, setEndDate] = useState<Date>(new Date(2025, 3, 29))
   const [adults, setAdults] = useState(1)
   const [children, setChildren] = useState(0)
   const [infants, setInfants] = useState(0)
@@ -47,7 +45,7 @@ export function FlightSearchForm() {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  // Airport search states - Initialize all states to avoid conditional hook calls
+  // Airport search states
   const [originOpen, setOriginOpen] = useState(false)
   const [destOpen, setDestOpen] = useState(false)
   const [originQuery, setOriginQuery] = useState("")
@@ -63,9 +61,6 @@ export function FlightSearchForm() {
   // Date picker state
   const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [multiCityDatePickerOpen, setMultiCityDatePickerOpen] = useState<{ [key: string]: boolean }>({})
-
-  // Passengers state
-  const [passengersOpen, setPassengersOpen] = useState(false)
 
   // Multi-city state
   const [multiCityFlights, setMultiCityFlights] = useState([
@@ -85,50 +80,7 @@ export function FlightSearchForm() {
       destinationCode: "JFK",
       date: new Date(2025, 4, 5),
     },
-  ]);
-
-  // Add passenger selection state
-  const [passengerMenuOpen, setPassengerMenuOpen] = useState(false)
-
-  // Format the passengers text to ensure it fits on small screens
-  const formatPassengersText = () => {
-    const totalPassengers = adults + children + infants;
-    
-    // For extremely small screens, show minimal info
-    if (isExtremelySmallMobile) {
-      return `${totalPassengers}P`
-    }
-    // For the smallest screens, show minimal info
-    else if (isTinyMobile) {
-      return `${totalPassengers}P, ${
-        cabinClass === "economy" ? "E" : cabinClass === "premium_economy" ? "PE" : cabinClass === "business" ? "B" : "F"
-      }`
-    }
-    // For small screens, use short abbreviations
-    else if (isSmallMobile) {
-      const cabinShort =
-        cabinClass === "economy"
-          ? "Eco"
-          : cabinClass === "premium_economy"
-            ? "P.Eco"
-            : cabinClass === "business"
-              ? "Bus"
-              : "First"
-      return `${totalPassengers} ${totalPassengers > 1 ? "Travelers" : "Traveler"}, ${cabinShort}`
-    }
-    // For regular mobile screens
-    else {
-      return `${totalPassengers} ${totalPassengers > 1 ? "Travelers" : "Traveler"}, ${
-        cabinClass === "economy"
-          ? "Economy"
-          : cabinClass === "premium_economy"
-            ? "Premium Economy"
-            : cabinClass === "business"
-              ? "Business"
-              : "First Class"
-      }`
-    }
-  }
+  ])
 
   const handleOriginSearch = async (query: string) => {
     setOriginQuery(query)
@@ -146,48 +98,14 @@ export function FlightSearchForm() {
     }
   }
 
-  const handleMultiCityAirportSearch = async (query: string, flightId: number, type: "origin" | "destination") => {
-    const key = `${flightId}-${type}`
-    setMultiCityAirportQuery((prev) => ({ ...prev, [key]: query }))
-
-    if (query.length >= 2) {
-      const results = await searchAirports(query)
-      setMultiCityAirportResults((prev) => ({ ...prev, [key]: results }))
-    }
+  const handleOriginSelect = (airport: any) => {
+    setOriginCity(airport.city)
+    setOriginCode(airport.iata)
   }
 
-  const handleOriginSelect = (city: string, code: string) => {
-    setOriginCity(city)
-    setOriginCode(code)
-    setOriginOpen(false)
-  }
-
-  const handleDestSelect = (city: string, code: string) => {
-    setDestinationCity(city)
-    setDestinationCode(code)
-    setDestOpen(false)
-  }
-
-  const handleMultiCityAirportSelect = (
-    flightId: number,
-    type: "origin" | "destination",
-    city: string,
-    code: string,
-  ) => {
-    setMultiCityFlights((prev) =>
-      prev.map((flight) =>
-        flight.id === flightId
-          ? {
-              ...flight,
-              [`${type}City`]: city,
-              [`${type}Code`]: code,
-            }
-          : flight,
-      ),
-    )
-
-    const key = `${flightId}-${type}`
-    setMultiCityAirportOpen((prev) => ({ ...prev, [key]: false }))
+  const handleDestSelect = (airport: any) => {
+    setDestinationCity(airport.city)
+    setDestinationCode(airport.iata)
   }
 
   const handleSwapLocations = () => {
@@ -199,24 +117,8 @@ export function FlightSearchForm() {
     setDestinationCode(tempCode)
   }
 
-  const handleMultiCitySwapLocations = (flightId: number) => {
-    setMultiCityFlights((prev) =>
-      prev.map((flight) =>
-        flight.id === flightId
-          ? {
-              ...flight,
-              originCity: flight.destinationCity,
-              originCode: flight.destinationCode,
-              destinationCity: flight.originCity,
-              destinationCode: flight.originCode,
-            }
-          : flight,
-      ),
-    )
-  }
-
   const handleDateSelect = (dateRange: DateRange | undefined) => {
-    if (!dateRange) return;
+    if (!dateRange) return
     
     if (dateRange.from) {
       setStartDate(dateRange.from)
@@ -228,7 +130,6 @@ export function FlightSearchForm() {
     }
   }
 
-  // Single date select handler for one-way trips
   const handleSingleDateSelect = (date: Date | undefined) => {
     if (date) {
       setStartDate(date)
@@ -236,117 +137,16 @@ export function FlightSearchForm() {
     }
   }
 
-  const handleMultiCityDateSelect = (flightId: number, date: Date | undefined) => {
-    if (date) {
-      setMultiCityFlights((prev) =>
-        prev.map((flightItem) => (flightItem.id === flightId ? { ...flightItem, date } : flightItem)),
-      )
-      setMultiCityDatePickerOpen((prev) => ({ ...prev, [flightId]: false }))
-    }
-  }
-
   const formatDateRange = () => {
     if (tripType === "one_way") {
-      if (isExtremelySmallMobile) {
-        return format(startDate, "d/M")
-      }
-      return format(startDate, isTinyMobile ? "d MMM" : "EEE, d MMM")
+      return format(startDate, "d MMM")
     }
 
-    // Make sure endDate is defined before formatting it
     if (!endDate) {
-      // If endDate is undefined, just show the start date
-      if (isExtremelySmallMobile) {
-        return format(startDate, "d/M")
-      }
-      return format(startDate, isTinyMobile ? "d MMM" : "EEE, d MMM")
-    }
-
-    if (isExtremelySmallMobile) {
-      return `${format(startDate, "d/M")}-${format(endDate, "d/M")}`
-    }
-
-    if (isTinyMobile) {
-      return `${format(startDate, "d MMM")}-${format(endDate, "d MMM")}`
-    }
-
-    if (isMobile) {
-      return `${format(startDate, "d MMM")} - ${format(endDate, "d MMM")}`
+      return format(startDate, "d MMM")
     }
 
     return `${format(startDate, "d MMM")} - ${format(endDate, "d MMM")}`
-  }
-
-  const formatMultiCityDate = (date: Date) => {
-    if (isExtremelySmallMobile) {
-      return format(date, "d/M")
-    }
-    return format(date, isTinyMobile ? "d MMM" : "EEE, d MMM")
-  }
-
-  // Truncate city names for very small screens
-  const truncateCity = (city: string, maxLength: number) => {
-    if (!city) return ""
-
-    // For extremely small screens, be very aggressive with truncation
-    if (isExtremelySmallMobile && city.length > maxLength - 4) {
-      return city.substring(0, maxLength - 4) + "..."
-    }
-    // For tiny screens, be more aggressive with truncation
-    else if (isTinyMobile && city.length > maxLength - 2) {
-      // Try to find a space to break at
-      const spaceIndex = city.indexOf(" ", Math.floor(maxLength / 2))
-      if (spaceIndex > 0 && spaceIndex <= maxLength - 2) {
-        return city.substring(0, spaceIndex) + "..."
-      }
-      return city.substring(0, maxLength - 2) + "..."
-    } else if (isSmallMobile && city.length > maxLength) {
-      return city.substring(0, maxLength) + "..."
-    }
-    return city
-  }
-
-  const handlePreviousMonth = () => {
-    setCurrentMonth((prev) => {
-      const newDate = new Date(prev)
-      newDate.setMonth(newDate.getMonth() - 1)
-      return newDate
-    })
-  }
-
-  const handleNextMonth = () => {
-    setCurrentMonth((prev) => {
-      const newDate = new Date(prev)
-      newDate.setMonth(newDate.getMonth() + 1)
-      return newDate
-    })
-  }
-
-  const addMultiCityFlight = () => {
-    // Get the last flight's destination as the new flight's origin
-    const lastFlight = multiCityFlights[multiCityFlights.length - 1]
-    const newFlightDate = new Date(lastFlight.date)
-    newFlightDate.setDate(newFlightDate.getDate() + 3) // Set date 3 days after the last flight
-
-    const newFlight = {
-      id: Date.now(), // Use timestamp as unique ID
-      originCity: lastFlight.destinationCity,
-      originCode: lastFlight.destinationCode,
-      destinationCity: "",
-      destinationCode: "",
-      date: newFlightDate,
-    }
-
-    setMultiCityFlights([...multiCityFlights, newFlight])
-  }
-
-  const removeMultiCityFlight = (flightId: number) => {
-    if (multiCityFlights.length <= 2) {
-      // Don't allow removing if only 2 flights remain
-      return
-    }
-
-    setMultiCityFlights(multiCityFlights.filter((flight) => flight.id !== flightId))
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -357,46 +157,26 @@ export function FlightSearchForm() {
     try {
       const formData = new FormData()
 
-      if (tripType === "multi_city") {
-        // Handle multi-city search
-        formData.append("tripType", "multi_city")
-        formData.append("adults", adults.toString())
-        formData.append("children", children.toString())
-        formData.append("infants", infants.toString())
-        formData.append("cabinClass", cabinClass)
+      formData.append("origin", originCode)
+      formData.append("destination", destinationCode)
+      formData.append("departureDate", format(startDate, "yyyy-MM-dd"))
 
-        // Add each flight segment
-        multiCityFlights.forEach((flight, index) => {
-          formData.append(`origin_${index}`, flight.originCode)
-          formData.append(`destination_${index}`, flight.destinationCode)
-          formData.append(`date_${index}`, format(flight.date, "yyyy-MM-dd"))
-        })
-
-        formData.append("segments", multiCityFlights.length.toString())
-      } else {
-        // Handle return or one-way search
-        formData.append("origin", originCode)
-        formData.append("destination", destinationCode)
-        formData.append("departureDate", format(startDate, "yyyy-MM-dd"))
-
-        if (tripType === "return") {
-          // Ensure return date is set for round-trip searches
-          if (!endDate) {
-            setErrorMessage("Please select a return date for your round-trip flight.")
-            setIsLoading(false)
-            return
-          }
-          formData.append("returnDate", format(endDate, "yyyy-MM-dd"))
+      if (tripType === "return") {
+        if (!endDate) {
+          setErrorMessage("Please select a return date for your round-trip flight.")
+          setIsLoading(false)
+          return
         }
-
-        formData.append("adults", adults.toString())
-        formData.append("children", children.toString())
-        formData.append("infants", infants.toString())
-        formData.append("cabinClass", cabinClass)
-        formData.append("tripType", tripType)
+        formData.append("returnDate", format(endDate, "yyyy-MM-dd"))
       }
 
-      // Store search parameters in sessionStorage (not the results)
+      formData.append("adults", adults.toString())
+      formData.append("children", children.toString())
+      formData.append("infants", infants.toString())
+      formData.append("cabinClass", cabinClass)
+      formData.append("tripType", tripType)
+
+      // Store search parameters in sessionStorage
       const searchParams = {
         origin: originCode,
         destination: destinationCode,
@@ -406,33 +186,18 @@ export function FlightSearchForm() {
         children,
         infants,
         cabinClass,
-        tripType,
-        multiCityFlights:
-          tripType === "multi_city"
-            ? multiCityFlights.map((flight) => ({
-                originCode: flight.originCode,
-                destinationCode: flight.destinationCode,
-                date: format(flight.date, "yyyy-MM-dd"),
-              }))
-            : [],
+        tripType
       }
 
-      // Store the search parameters, not the results
       sessionStorage.setItem("flightSearchParams", JSON.stringify(searchParams))
 
-      console.log("Submitting search with parameters:", searchParams)
       const response = await searchFlightsAction(formData)
 
       if (response.data) {
-        // Debug the API response
-        console.log("API Response:", response.data)
-        
-        // Store only the search ID or a reference to the results
         if (response.data.searchId) {
           sessionStorage.setItem("flightSearchId", response.data.searchId)
         }
 
-        // Make the data available to the search results component
         window._flightSearchResultsData = response.data
         
         router.push("/search-results")
@@ -448,33 +213,30 @@ export function FlightSearchForm() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4">
-      {/* Trip Type Selector - Improved Responsive Design */}
+    <div className="w-full max-w-5xl mx-auto px-4 py-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl shadow-sm">
+      {/* Trip Type Selector */}
       <div className="flex justify-center mb-4 sm:mb-6 overflow-hidden">
-        <div className="trip-type-selector">
+        <div className="bg-indigo-100 rounded-full p-1 flex">
           <button
             type="button"
-            className={`trip-type-button ${tripType === "return" ? "active" : ""}`}
+            className={`px-4 sm:px-6 py-2 text-sm font-medium rounded-full transition-all ${tripType === "return" ? "bg-white text-indigo-700 shadow-sm" : "text-indigo-600 hover:bg-indigo-50"}`}
             onClick={() => setTripType("return")}
-            aria-pressed={tripType === "return"}
           >
-            {isExtremelySmallMobile ? "Return" : "Return"}
+            Return
           </button>
           <button
             type="button"
-            className={`trip-type-button ${tripType === "one_way" ? "active" : ""}`}
+            className={`px-4 sm:px-6 py-2 text-sm font-medium rounded-full transition-all ${tripType === "one_way" ? "bg-white text-indigo-700 shadow-sm" : "text-indigo-600 hover:bg-indigo-50"}`}
             onClick={() => setTripType("one_way")}
-            aria-pressed={tripType === "one_way"}
           >
-            {isExtremelySmallMobile ? "1-Way" : isTinyMobile ? "One way" : "One way"}
+            One way
           </button>
           <button
             type="button"
-            className={`trip-type-button ${tripType === "multi_city" ? "active" : ""}`}
+            className={`px-4 sm:px-6 py-2 text-sm font-medium rounded-full transition-all ${tripType === "multi_city" ? "bg-white text-indigo-700 shadow-sm" : "text-indigo-600 hover:bg-indigo-50"}`}
             onClick={() => setTripType("multi_city")}
-            aria-pressed={tripType === "multi_city"}
           >
-            {isExtremelySmallMobile ? "Multi" : isTinyMobile ? "Multi" : "Multi-city"}
+            Multi-city
           </button>
         </div>
       </div>
@@ -486,908 +248,127 @@ export function FlightSearchForm() {
         </div>
       )}
 
-      {/* Mobile Search Form */}
-      {isMobile && (
-        <form onSubmit={handleSubmit} className="relative">
-          {tripType !== "multi_city" ? (
-            // Return and One-way form for mobile
-            <div className="search-form-mobile">
-              {/* Origin Field */}
-              <div className="mobile-form-field">
-                <div className="form-field-label">Where from?</div>
-                <Popover open={originOpen} onOpenChange={setOriginOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className="form-field-input">
-                      <MapPin className="form-field-icon w-5 h-5" />
-                      <div className="form-field-text">
-                        {truncateCity(originCity, 10) || <span className="form-field-placeholder">Where from?</span>}
-                      </div>
-                      {originCode && <div className="form-field-code">{originCode}</div>}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="p-0 w-[300px] popover-content"
-                    align="start"
-                    side="bottom"
-                    sideOffset={5}
-                    alignOffset={-10}
-                  >
-                    <Command>
-                      <CommandInput
-                        placeholder="Search airports..."
-                        value={originQuery}
-                        onValueChange={handleOriginSearch}
-                        className="command-input"
-                      />
-                      <CommandList className="airport-command-list">
-                        <CommandEmpty>No airports found</CommandEmpty>
-                        <CommandGroup>
-                          {originResults.map((airport) => (
-                            <CommandItem
-                              key={airport.id}
-                              onSelect={() => handleOriginSelect(airport.city_name || airport.city, airport.iata_code)}
-                              className="airport-command-item"
-                            >
-                              <MapPin className="mr-2 h-4 w-4" />
-                              <span className="airport-name">{airport.name}</span>
-                              <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
+      {/* Search Form - Responsive for both mobile and desktop */}
+      <form onSubmit={handleSubmit} className="relative">
+        <div className={cn(
+          "bg-white rounded-2xl p-2 shadow-md", 
+          isMobile ? "flex flex-col space-y-2" : "flex items-center gap-2"
+        )}>
+          {/* Origin Field */}
+          <div className={cn("desktop-field", isMobile ? "w-full" : "flex-1 min-w-[150px]")}>
+            <div className="desktop-field-label text-xs text-gray-500 font-medium px-3 pt-1">Where from?</div>
+            <AirportSearchWrapper
+              id="origin-search"
+              name="origin"
+              label=""
+              placeholder="Search airports..."
+              initialValue={originCity ? `${originCity} (${originCode})` : ""}
+              onSelect={handleOriginSelect}
+              className="w-full"
+            />
+          </div>
 
-              {/* Swap Button - standard design between origin and destination */}
-              <div className="standard-swap-button-container">
-                <button
-                  type="button"
-                  onClick={handleSwapLocations}
-                  className="standard-swap-button"
-                  aria-label="Swap origin and destination"
-                >
-                  <ArrowLeftRight className="h-4 w-4" />
+          {/* Swap Button */}
+          <div className={cn(
+            isMobile ? "self-center -my-1" : "flex items-center self-center py-2"
+          )}>
+            <button
+              type="button"
+              onClick={handleSwapLocations}
+              className="bg-gray-100 hover:bg-gray-200 p-2 rounded-full"
+              aria-label="Swap origin and destination"
+            >
+              <ArrowLeftRight className="h-4 w-4 text-gray-600" />
+            </button>
+          </div>
+
+          {/* Destination Field */}
+          <div className={cn("desktop-field", isMobile ? "w-full" : "flex-1 min-w-[150px]")}>
+            <div className="desktop-field-label text-xs text-gray-500 font-medium px-3 pt-1">Where to?</div>
+            <AirportSearchWrapper
+              id="destination-search"
+              name="destination"
+              label=""
+              placeholder="Search airports..."
+              initialValue={destinationCity ? `${destinationCity} (${destinationCode})` : ""}
+              onSelect={handleDestSelect}
+              className="w-full"
+            />
+          </div>
+
+          {/* Date Field */}
+          <div className={cn("desktop-field", isMobile ? "w-full" : "flex-1 min-w-[150px]")}>
+            <div className="desktop-field-label text-xs text-gray-500 font-medium px-3 pt-1">Dates</div>
+            <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+              <PopoverTrigger asChild>
+                <button type="button" className="w-full text-left flex items-center h-10 px-3 rounded-md">
+                  <Calendar className="h-4 w-4 text-gray-500 mr-2" />
+                  <span className="text-sm">{formatDateRange()}</span>
                 </button>
-              </div>
-
-              {/* Destination Field */}
-              <div className="mobile-form-field">
-                <div className="form-field-label">Where to?</div>
-                <Popover open={destOpen} onOpenChange={setDestOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className="form-field-input">
-                      <MapPin className="form-field-icon w-5 h-5" />
-                      <div className="form-field-text">
-                        {truncateCity(destinationCity, isTinyMobile ? 8 : 10) || (
-                          <span className="form-field-placeholder">Where to?</span>
-                        )}
-                      </div>
-                      {destinationCode && <div className="form-field-code">{destinationCode}</div>}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="p-0 w-[300px] popover-content"
-                    align="start"
-                    side="bottom"
-                    sideOffset={5}
-                    alignOffset={-10}
-                  >
-                    <Command>
-                      <CommandInput
-                        placeholder="Search airports..."
-                        value={destQuery}
-                        onValueChange={handleDestSearch}
-                        className="command-input"
-                      />
-                      <CommandList className="airport-command-list">
-                        <CommandEmpty>No airports found</CommandEmpty>
-                        <CommandGroup>
-                          {destResults.map((airport) => (
-                            <CommandItem
-                              key={airport.id}
-                              onSelect={() => handleDestSelect(airport.city_name || airport.city, airport.iata_code)}
-                              className="airport-command-item"
-                            >
-                              <MapPin className="mr-2 h-4 w-4" />
-                              <span className="airport-name">{airport.name}</span>
-                              <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Date and Passengers Fields in a grid */}
-              <div className="mobile-form-grid">
-                {/* Date Field */}
-                <div className="mobile-form-field">
-                  <div className="form-field-label">Dates</div>
-                  <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                    <PopoverTrigger asChild>
-                      <button type="button" className="form-field-input">
-                        <Calendar className="form-field-icon w-5 h-5" />
-                        <div className="form-field-text date-field-text">{formatDateRange()}</div>
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="p-0 w-auto popover-content date-popover"
-                      align="start"
-                      side="bottom"
-                      sideOffset={5}
-                      alignOffset={-10}
-                    >
-                      <div className="calendar-wrapper">
-                        <div className="calendar-header">
-                          <button
-                            type="button"
-                            onClick={handlePreviousMonth}
-                            className="calendar-nav-button"
-                            aria-label="Previous month"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </button>
-                          <div className="calendar-month-title">{format(currentMonth, "MMMM yyyy")}</div>
-                          <button
-                            type="button"
-                            onClick={handleNextMonth}
-                            className="calendar-nav-button"
-                            aria-label="Next month"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </button>
-                        </div>
-                        {tripType === "one_way" ? (
-                          <CalendarComponent
-                            mode="single"
-                            selected={startDate}
-                            onSelect={handleSingleDateSelect}
-                            numberOfMonths={1}
-                            month={currentMonth}
-                            onMonthChange={setCurrentMonth}
-                            disabled={(date) => date < new Date()}
-                            className="calendar-component"
-                            classNames={{
-                              day: "calendar-day",
-                              day_selected: "calendar-day selected",
-                              head_cell: "calendar-head-cell",
-                              cell: "calendar-cell",
-                              month: "calendar-month",
-                              caption: "calendar-caption",
-                              nav_button: "hidden", // Hide default nav buttons
-                            }}
-                          />
-                        ) : (
-                          <CalendarComponent
-                            mode="range"
-                            selected={{ from: startDate, to: endDate }}
-                            onSelect={handleDateSelect}
-                            numberOfMonths={1}
-                            month={currentMonth}
-                            onMonthChange={setCurrentMonth}
-                            disabled={(date) => date < new Date()}
-                            className="calendar-component"
-                            classNames={{
-                              day: "calendar-day",
-                              day_selected: "calendar-day selected",
-                              day_range_middle: "calendar-day range",
-                              head_cell: "calendar-head-cell",
-                              cell: "calendar-cell",
-                              month: "calendar-month",
-                              caption: "calendar-caption",
-                              nav_button: "hidden", // Hide default nav buttons
-                            }}
-                          />
-                        )}
-                        <div className="calendar-footer">
-                          <Button
-                            type="button"
-                            className="calendar-done-button"
-                            onClick={() => setDatePickerOpen(false)}
-                          >
-                            Done
-                          </Button>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                {/* Passengers and Cabin dropdown button */}
-                <div className="col-span-12 lg:col-span-2">
-                  <PassengersSelector
-                    adults={adults}
-                    onAdultsChange={setAdults}
-                    children={children}
-                    onChildrenChange={setChildren}
-                    infants={infants}
-                    onInfantsChange={setInfants}
-                    cabinClass={cabinClass}
-                    onCabinClassChange={setCabinClass}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-
-              {/* Search Button */}
-              <div className="mobile-search-button-container">
-                <button type="submit" disabled={isLoading} className="search-button-mobile">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                      <span>Searching...</span>
-                    </div>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 w-auto" align="start">
+                <div className="calendar-wrapper">
+                  {tripType === "one_way" ? (
+                    <CalendarComponent
+                      mode="single"
+                      selected={startDate}
+                      onSelect={handleSingleDateSelect}
+                      numberOfMonths={isMobile ? 1 : 2}
+                      disabled={(date) => date < new Date()}
+                      className="calendar-component"
+                    />
                   ) : (
-                    <span>Search flights</span>
+                    <CalendarComponent
+                      mode="range"
+                      selected={{ from: startDate, to: endDate }}
+                      onSelect={handleDateSelect}
+                      numberOfMonths={isMobile ? 1 : 2}
+                      disabled={(date) => date < new Date()}
+                      className="calendar-component"
+                    />
                   )}
-                </button>
-              </div>
-            </div>
-          ) : (
-            // Multi-city form for mobile
-            <div className="search-form-mobile multi-city-form">
-              {/* Multi-city flights */}
-              {multiCityFlights.map((flight, index) => (
-                <div key={flight.id} className="multi-city-flight-segment">
-                  <div className="multi-city-segment-header">
-                    <div className="multi-city-segment-title">Flight {index + 1}</div>
-                    {multiCityFlights.length > 2 && (
-                      <button
-                        type="button"
-                        onClick={() => removeMultiCityFlight(flight.id)}
-                        className="multi-city-remove-button"
-                        aria-label="Remove flight segment"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Origin Field */}
-                  <div className="mobile-form-field">
-                    <div className="form-field-label">Where from?</div>
-                    <Popover
-                      open={multiCityAirportOpen[`${flight.id}-origin`]}
-                      onOpenChange={(open) =>
-                        setMultiCityAirportOpen((prev) => ({ ...prev, [`${flight.id}-origin`]: open }))
-                      }
-                    >
-                      <PopoverTrigger asChild>
-                        <button type="button" className="form-field-input">
-                          <MapPin className="form-field-icon w-5 h-5" />
-                          <div className="form-field-text">
-                            {truncateCity(flight.originCity, 10) || (
-                              <span className="form-field-placeholder">Where from?</span>
-                            )}
-                          </div>
-                          {flight.originCode && <div className="form-field-code">{flight.originCode}</div>}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0 w-[300px] popover-content"
-                        align="start"
-                        side="bottom"
-                        sideOffset={5}
-                        alignOffset={-10}
-                      >
-                        <Command>
-                          <CommandInput
-                            placeholder="Search airports..."
-                            value={multiCityAirportQuery[`${flight.id}-origin`] || ""}
-                            onValueChange={(query) => handleMultiCityAirportSearch(query, flight.id, "origin")}
-                            className="command-input"
-                          />
-                          <CommandList className="airport-command-list">
-                            <CommandEmpty>No airports found</CommandEmpty>
-                            <CommandGroup>
-                              {(multiCityAirportResults[`${flight.id}-origin`] || []).map((airport) => (
-                                <CommandItem
-                                  key={airport.id}
-                                  onSelect={() =>
-                                    handleMultiCityAirportSelect(
-                                      flight.id,
-                                      "origin",
-                                      airport.city_name || airport.city,
-                                      airport.iata_code,
-                                    )
-                                  }
-                                  className="airport-command-item"
-                                >
-                                  <MapPin className="mr-2 h-4 w-4" />
-                                  <span className="airport-name">{airport.name}</span>
-                                  <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* Swap Button */}
-                  <div className="standard-swap-button-container">
-                    <button
-                      type="button"
-                      onClick={() => handleMultiCitySwapLocations(flight.id)}
-                      className="standard-swap-button"
-                      aria-label="Swap origin and destination"
-                    >
-                      <ArrowLeftRight className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  {/* Destination Field */}
-                  <div className="mobile-form-field">
-                    <div className="form-field-label">Where to?</div>
-                    <Popover
-                      open={multiCityAirportOpen[`${flight.id}-destination`]}
-                      onOpenChange={(open) =>
-                        setMultiCityAirportOpen((prev) => ({ ...prev, [`${flight.id}-destination`]: open }))
-                      }
-                    >
-                      <PopoverTrigger asChild>
-                        <button type="button" className="form-field-input">
-                          <MapPin className="form-field-icon w-5 h-5" />
-                          <div className="form-field-text">
-                            {truncateCity(flight.destinationCity, isTinyMobile ? 8 : 10) || (
-                              <span className="form-field-placeholder">Where to?</span>
-                            )}
-                          </div>
-                          {flight.destinationCode && <div className="form-field-code">{flight.destinationCode}</div>}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0 w-[300px] popover-content"
-                        align="start"
-                        side="bottom"
-                        sideOffset={5}
-                        alignOffset={-10}
-                      >
-                        <Command>
-                          <CommandInput
-                            placeholder="Search airports..."
-                            value={multiCityAirportQuery[`${flight.id}-destination`] || ""}
-                            onValueChange={(query) => handleMultiCityAirportSearch(query, flight.id, "destination")}
-                            className="command-input"
-                          />
-                          <CommandList className="airport-command-list">
-                            <CommandEmpty>No airports found</CommandEmpty>
-                            <CommandGroup>
-                              {(multiCityAirportResults[`${flight.id}-destination`] || []).map((airport) => (
-                                <CommandItem
-                                  key={airport.id}
-                                  onSelect={() =>
-                                    handleMultiCityAirportSelect(
-                                      flight.id,
-                                      "destination",
-                                      airport.city_name || airport.city,
-                                      airport.iata_code,
-                                    )
-                                  }
-                                  className="airport-command-item"
-                                >
-                                  <MapPin className="mr-2 h-4 w-4" />
-                                  <span className="airport-name">{airport.name}</span>
-                                  <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* Date Field */}
-                  <div className="mobile-form-field">
-                    <div className="form-field-label">Date</div>
-                    <Popover
-                      open={multiCityDatePickerOpen[flight.id]}
-                      onOpenChange={(open) => setMultiCityDatePickerOpen((prev) => ({ ...prev, [flight.id]: open }))}
-                    >
-                      <PopoverTrigger asChild>
-                        <button type="button" className="form-field-input">
-                          <Calendar className="form-field-icon w-5 h-5" />
-                          <div className="form-field-text date-field-text">{formatMultiCityDate(flight.date)}</div>
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0 w-auto popover-content date-popover"
-                        align="start"
-                        side="bottom"
-                        sideOffset={5}
-                        alignOffset={-10}
-                      >
-                        <div className="calendar-wrapper">
-                          <div className="calendar-header">
-                            <button
-                              type="button"
-                              onClick={handlePreviousMonth}
-                              className="calendar-nav-button"
-                              aria-label="Previous month"
-                            >
-                              <ChevronLeft className="h-4 w-4" />
-                            </button>
-                            <div className="calendar-month-title">{format(currentMonth, "MMMM yyyy")}</div>
-                            <button
-                              type="button"
-                              onClick={handleNextMonth}
-                              className="calendar-nav-button"
-                              aria-label="Next month"
-                            >
-                              <ChevronRight className="h-4 w-4" />
-                            </button>
-                          </div>
-                          <CalendarComponent
-                            mode="single"
-                            selected={flight.date}
-                            onSelect={(date) => handleMultiCityDateSelect(flight.id, date)}
-                            numberOfMonths={1}
-                            month={currentMonth}
-                            onMonthChange={setCurrentMonth}
-                            disabled={(date) => date < new Date()}
-                            className="calendar-component"
-                            classNames={{
-                              day: "calendar-day",
-                              day_selected: "calendar-day selected",
-                              head_cell: "calendar-head-cell",
-                              cell: "calendar-cell",
-                              month: "calendar-month",
-                              caption: "calendar-caption",
-                              nav_button: "hidden", // Hide default nav buttons
-                            }}
-                          />
-                          <div className="calendar-footer">
-                            <Button
-                              type="button"
-                              className="calendar-done-button"
-                              onClick={() => setMultiCityDatePickerOpen((prev) => ({ ...prev, [flight.id]: false }))}
-                            >
-                              Done
-                            </Button>
-                          </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {index < multiCityFlights.length - 1 && <div className="multi-city-segment-divider"></div>}
                 </div>
-              ))}
+              </PopoverContent>
+            </Popover>
+          </div>
 
-              {/* Add Flight Button */}
-              <div className="multi-city-add-flight-container">
-                <button
-                  type="button"
-                  onClick={addMultiCityFlight}
-                  className="multi-city-add-flight-button"
-                  disabled={multiCityFlights.length >= 6}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add another flight
-                </button>
-              </div>
+          {/* Passengers and Cabin */}
+          <div className={cn("desktop-field", isMobile ? "w-full" : "flex-1 min-w-[150px]")}>
+            <div className="desktop-field-label text-xs text-gray-500 font-medium px-3 pt-1">Travelers & Class</div>
+            <PassengersSelector
+              adults={adults}
+              onAdultsChange={setAdults}
+              children={children}
+              onChildrenChange={setChildren}
+              infants={infants}
+              onInfantsChange={setInfants}
+              cabinClass={cabinClass}
+              onCabinClassChange={setCabinClass}
+              className="w-full"
+            />
+          </div>
 
-              {/* Passengers and Search */}
-              <div className="multi-city-footer-mobile">
-                {/* Passengers Field */}
-                <div className="multi-city-passengers-mobile">
-                  <PassengersSelector
-                    adults={adults}
-                    onAdultsChange={setAdults}
-                    children={children}
-                    onChildrenChange={setChildren}
-                    infants={infants}
-                    onInfantsChange={setInfants}
-                    cabinClass={cabinClass}
-                    onCabinClassChange={setCabinClass}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Search Button */}
-                <button type="submit" disabled={isLoading} className="multi-city-search-button-mobile">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                      <span>Searching...</span>
-                    </div>
-                  ) : (
-                    <span>Search flights</span>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-        </form>
-      )}
-
-      {/* Desktop Search Form */}
-      {!isMobile && (
-        <form onSubmit={handleSubmit} className="relative">
-          {tripType !== "multi_city" ? (
-            // Return and One-way form for desktop
-            <div className="search-form-desktop">
-              {/* Origin Field */}
-              <div className="desktop-field flex-1">
-                <div className="desktop-field-label">Where from?</div>
-                <Popover open={originOpen} onOpenChange={setOriginOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className="desktop-field-content w-full text-left">
-                      <MapPin className="desktop-field-icon" />
-                      <span>{originCity}</span>
-                      <span className="desktop-field-code ml-auto">{originCode}</span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[300px] popover-content" align="start">
-                    <Command>
-                      <CommandInput
-                        placeholder="Search airports..."
-                        value={originQuery}
-                        onValueChange={handleOriginSearch}
-                        className="command-input"
-                      />
-                      <CommandList>
-                        <CommandEmpty>No airports found</CommandEmpty>
-                        <CommandGroup>
-                          {originResults.map((airport) => (
-                            <CommandItem
-                              key={airport.id}
-                              onSelect={() => handleOriginSelect(airport.city_name || airport.city, airport.iata_code)}
-                            >
-                              <MapPin className="mr-2 h-4 w-4" />
-                              <span>{airport.name}</span>
-                              <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Swap Button - standard design */}
-              <div className="desktop-standard-swap-container">
-                <button
-                  type="button"
-                  onClick={handleSwapLocations}
-                  className="standard-swap-button"
-                  aria-label="Swap origin and destination"
-                >
-                  <ArrowLeftRight className="h-5 w-5" />
-                </button>
-              </div>
-
-              {/* Destination Field */}
-              <div className="desktop-field flex-1">
-                <div className="desktop-field-label">Where to?</div>
-                <Popover open={destOpen} onOpenChange={setDestOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className="desktop-field-content w-full text-left">
-                      <MapPin className="desktop-field-icon" />
-                      <span>{destinationCity}</span>
-                      <span className="desktop-field-code ml-auto">{destinationCode}</span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 w-[300px] popover-content" align="start">
-                    <Command>
-                      <CommandInput
-                        placeholder="Search airports..."
-                        value={destQuery}
-                        onValueChange={handleDestSearch}
-                        className="command-input"
-                      />
-                      <CommandList>
-                        <CommandEmpty>No airports found</CommandEmpty>
-                        <CommandGroup>
-                          {destResults.map((airport) => (
-                            <CommandItem
-                              key={airport.id}
-                              onSelect={() => handleDestSelect(airport.city_name || airport.city, airport.iata_code)}
-                            >
-                              <MapPin className="mr-2 h-4 w-4" />
-                              <span>{airport.name}</span>
-                              <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Date Field */}
-              <div className="desktop-field flex-1">
-                <div className="desktop-field-label">Dates</div>
-                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                  <PopoverTrigger asChild>
-                    <button type="button" className="desktop-field-content w-full text-left">
-                      <Calendar className="desktop-field-icon" />
-                      <span className="date-field-text">{formatDateRange()}</span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 w-auto popover-content" align="start">
-                    <div className="calendar-wrapper">
-                      {tripType === "one_way" ? (
-                        <CalendarComponent
-                          mode="single"
-                          selected={startDate}
-                          onSelect={handleSingleDateSelect}
-                          numberOfMonths={2}
-                          disabled={(date) => date < new Date()}
-                          className="calendar-component"
-                          classNames={{
-                            day: "calendar-day",
-                            day_selected: "calendar-day selected",
-                          }}
-                        />
-                      ) : (
-                        <CalendarComponent
-                          mode="range"
-                          selected={{ from: startDate, to: endDate }}
-                          onSelect={handleDateSelect}
-                          numberOfMonths={2}
-                          disabled={(date) => date < new Date()}
-                          className="calendar-component"
-                          classNames={{
-                            day: "calendar-day",
-                            day_selected: "calendar-day selected",
-                            day_range_middle: "calendar-day range",
-                          }}
-                        />
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* Passengers and Cabin dropdown button */}
-              <div className="col-span-12 lg:col-span-2">
-                <PassengersSelector
-                  adults={adults}
-                  onAdultsChange={setAdults}
-                  children={children}
-                  onChildrenChange={setChildren}
-                  infants={infants}
-                  onInfantsChange={setInfants}
-                  cabinClass={cabinClass}
-                  onCabinClassChange={setCabinClass}
-                  className="w-full"
-                />
-              </div>
-
-              {/* Search Button */}
-              <button type="submit" disabled={isLoading} className="search-button-desktop" aria-label="Search flights">
-                {isLoading ? (
-                  <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
-                ) : (
-                  <Search className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-          ) : (
-            // Multi-city form for desktop
-            <div className="search-form-desktop-multi-city">
-              {/* Multi-city flights */}
-              {multiCityFlights.map((flight, index) => (
-                <div key={flight.id} className="multi-city-flight-segment-desktop">
-                  <div className="multi-city-segment-header-desktop">
-                    <div className="multi-city-segment-title-desktop">Flight {index + 1}</div>
-                    {multiCityFlights.length > 2 && (
-                      <button
-                        type="button"
-                        onClick={() => removeMultiCityFlight(flight.id)}
-                        className="multi-city-remove-button-desktop"
-                        aria-label="Remove flight segment"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="multi-city-segment-content-desktop">
-                    {/* Origin Field */}
-                    <div className="multi-city-field-desktop">
-                      <div className="desktop-field-label">Where from?</div>
-                      <Popover
-                        open={multiCityAirportOpen[`${flight.id}-origin`]}
-                        onOpenChange={(open) =>
-                          setMultiCityAirportOpen((prev) => ({ ...prev, [`${flight.id}-origin`]: open }))
-                        }
-                      >
-                        <PopoverTrigger asChild>
-                          <button type="button" className="desktop-field-content w-full text-left">
-                            <MapPin className="desktop-field-icon" />
-                            <span>{flight.originCity}</span>
-                            <span className="desktop-field-code ml-auto">{flight.originCode}</span>
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[300px] popover-content" align="start">
-                          <Command>
-                            <CommandInput
-                              placeholder="Search airports..."
-                              value={multiCityAirportQuery[`${flight.id}-origin`] || ""}
-                              onValueChange={(query) => handleMultiCityAirportSearch(query, flight.id, "origin")}
-                              className="command-input"
-                            />
-                            <CommandList>
-                              <CommandEmpty>No airports found</CommandEmpty>
-                              <CommandGroup>
-                                {(multiCityAirportResults[`${flight.id}-origin`] || []).map((airport) => (
-                                  <CommandItem
-                                    key={airport.id}
-                                    onSelect={() =>
-                                      handleMultiCityAirportSelect(
-                                        flight.id,
-                                        "origin",
-                                        airport.city_name || airport.city,
-                                        airport.iata_code,
-                                      )
-                                    }
-                                  >
-                                    <MapPin className="mr-2 h-4 w-4" />
-                                    <span>{airport.name}</span>
-                                    <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    {/* Swap Button */}
-                    <div className="multi-city-swap-desktop">
-                      <button
-                        type="button"
-                        onClick={() => handleMultiCitySwapLocations(flight.id)}
-                        className="standard-swap-button"
-                        aria-label="Swap origin and destination"
-                      >
-                        <ArrowLeftRight className="h-5 w-5" />
-                      </button>
-                    </div>
-
-                    {/* Destination Field */}
-                    <div className="multi-city-field-desktop">
-                      <div className="desktop-field-label">Where to?</div>
-                      <Popover
-                        open={multiCityAirportOpen[`${flight.id}-destination`]}
-                        onOpenChange={(open) =>
-                          setMultiCityAirportOpen((prev) => ({ ...prev, [`${flight.id}-destination`]: open }))
-                        }
-                      >
-                        <PopoverTrigger asChild>
-                          <button type="button" className="desktop-field-content w-full text-left">
-                            <MapPin className="desktop-field-icon" />
-                            <span>{flight.destinationCity}</span>
-                            <span className="desktop-field-code ml-auto">{flight.destinationCode}</span>
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[300px] popover-content" align="start">
-                          <Command>
-                            <CommandInput
-                              placeholder="Search airports..."
-                              value={multiCityAirportQuery[`${flight.id}-destination`] || ""}
-                              onValueChange={(query) => handleMultiCityAirportSearch(query, flight.id, "destination")}
-                              className="command-input"
-                            />
-                            <CommandList>
-                              <CommandEmpty>No airports found</CommandEmpty>
-                              <CommandGroup>
-                                {(multiCityAirportResults[`${flight.id}-destination`] || []).map((airport) => (
-                                  <CommandItem
-                                    key={airport.id}
-                                    onSelect={() =>
-                                      handleMultiCityAirportSelect(
-                                        flight.id,
-                                        "destination",
-                                        airport.city_name || airport.city,
-                                        airport.iata_code,
-                                      )
-                                    }
-                                  >
-                                    <MapPin className="mr-2 h-4 w-4" />
-                                    <span>{airport.name}</span>
-                                    <span className="ml-auto text-xs text-blue-600">{airport.iata_code}</span>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    {/* Date Field */}
-                    <div className="multi-city-field-desktop">
-                      <div className="desktop-field-label">Date</div>
-                      <Popover
-                        open={multiCityDatePickerOpen[flight.id]}
-                        onOpenChange={(open) => setMultiCityDatePickerOpen((prev) => ({ ...prev, [flight.id]: open }))}
-                      >
-                        <PopoverTrigger asChild>
-                          <button type="button" className="desktop-field-content w-full text-left">
-                            <Calendar className="desktop-field-icon" />
-                            <span className="date-field-text">{formatMultiCityDate(flight.date)}</span>
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-auto popover-content" align="start">
-                          <div className="calendar-wrapper">
-                            <CalendarComponent
-                              mode="single"
-                              selected={flight.date}
-                              onSelect={(date) => handleMultiCityDateSelect(flight.id, date)}
-                              numberOfMonths={2}
-                              disabled={(date) => date < new Date()}
-                              className="calendar-component"
-                              classNames={{
-                                day: "calendar-day",
-                                day_selected: "calendar-day selected",
-                              }}
-                            />
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {/* Add Flight Button */}
-              <div className="multi-city-add-flight-container-desktop">
-                <button
-                  type="button"
-                  onClick={addMultiCityFlight}
-                  className="multi-city-add-flight-button-desktop"
-                  disabled={multiCityFlights.length >= 6}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add another flight
-                </button>
-              </div>
-
-              {/* Passengers and Search */}
-              <div className="multi-city-footer-desktop">
-                {/* Passengers Field */}
-                <div className="multi-city-passengers-desktop">
-                  <PassengersSelector
-                    adults={adults}
-                    onAdultsChange={setAdults}
-                    children={children}
-                    onChildrenChange={setChildren}
-                    infants={infants}
-                    onInfantsChange={setInfants}
-                    cabinClass={cabinClass}
-                    onCabinClassChange={setCabinClass}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Search Button */}
-                <button type="submit" disabled={isLoading} className="multi-city-search-button-desktop">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                      <span>Searching...</span>
-                    </div>
-                  ) : (
-                    <span>Search flights</span>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-        </form>
-      )}
+          {/* Search Button */}
+          <button 
+            type="submit" 
+            disabled={isLoading} 
+            className={cn(
+              "bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center",
+              isMobile ? "h-12 w-full mt-2" : "h-12 w-12 ml-2 self-end mb-1"
+            )}
+            aria-label="Search flights"
+          >
+            {isLoading ? (
+              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+            ) : (
+              <>
+                <Search className="h-5 w-5" />
+                {isMobile && <span className="ml-2">Search</span>}
+              </>
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   )
-}
+} 

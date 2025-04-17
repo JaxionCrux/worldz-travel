@@ -2,104 +2,104 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { Check } from "lucide-react"
+import { ArrowDownToLine, ShieldCheck, Zap } from "lucide-react"
 
 export function MobileAppPromo() {
-  const isMobile = useMediaQuery("(max-width: 768px)")
-
   return (
-    <section
-      className="py-16 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white"
-      aria-labelledby="mobile-app-heading"
-    >
-      <div className="container mx-auto">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-8 md:mb-0">
-            <div className="max-w-lg">
-              <h2 id="mobile-app-heading" className="text-3xl font-bold mb-4">
-                Download Our Mobile App
-              </h2>
-              <p className="text-white/90 mb-6">
-                Take The Worldz Travel with you wherever you go. Book flights, manage your trips, and receive real-time
-                updates right from your phone.
-              </p>
-
-              <div className="space-y-4 mb-8">
-                {[
-                  "Book flights with just a few taps",
-                  "Manage your bookings on the go",
-                  "Get real-time flight notifications",
-                  "Access mobile boarding passes",
-                  "Earn and redeem loyalty points",
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-start">
-                    <Check className="w-5 h-5 mr-2 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
+    <div className="relative overflow-hidden bg-gradient-to-b from-indigo-50 to-white py-16">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-indigo-900">
+              Get the full experience with our mobile app
+            </h2>
+            <p className="text-lg text-gray-700 mb-8">
+              Download our app to unlock exclusive features and make your travel experience even more seamless. Book flights, manage your trips, and receive real-time updates, all from your smartphone.
+            </p>
+            
+            <div className="space-y-6 mb-8">
+              <div className="flex items-start">
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">
+                  <Zap className="h-6 w-6 text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl mb-2">Faster Booking</h3>
+                  <p className="text-gray-600">Book flights in under 30 seconds with saved preferences and payment methods.</p>
+                </div>
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  variant="outline"
-                  className="bg-white text-indigo-700 hover:bg-gray-100 border-none"
-                  aria-label="Download on the App Store"
-                >
-                  <div className="flex items-center">
-                    <div className="mr-3">
-                      <svg viewBox="0 0 24 24" className="w-7 h-7" fill="currentColor">
-                        <path d="M19.665 16.811a10.316 10.316 0 0 1-1.021 1.837c-.537.767-.978 1.297-1.316 1.592-.525.482-1.089.73-1.692.744-.432 0-.954-.123-1.562-.373-.61-.249-1.17-.371-1.683-.371-.537 0-1.113.122-1.73.371-.616.25-1.114.381-1.495.393-.577.019-1.154-.242-1.729-.781-.368-.32-.83-.87-1.389-1.652-.594-.82-1.083-1.773-1.465-2.858-.407-1.168-.611-2.301-.611-3.4 0-1.258.269-2.343.808-3.254a4.78 4.78 0 0 1 1.67-1.725A4.506 4.506 0 0 1 9.62 7.484c.453 0 1.047.137 1.785.413.736.276 1.202.416 1.4.416.153 0 .671-.164 1.549-.492.829-.307 1.529-.434 2.1-.384 1.551.123 2.715.727 3.492 1.816-1.388.84-2.07 2.013-2.07 3.521 0 1.178.419 2.157 1.258 2.936.374.391.79.691 1.247.902a4.03 4.03 0 0 1-.614 1.698zM13.398 3.7c0 .924-.27 1.787-.811 2.587-.55.801-1.214 1.265-1.945 1.424a3.35 3.35 0 0 1-.033-.427c0-.904.293-1.867.879-2.87.293-.501.666-.911 1.117-1.228.452-.319.878-.499 1.279-.541.012.128.017.255.017.379z" />
-                      </svg>
-                    </div>
-                    <div className="flex flex-col items-start">
-                      <span className="text-xs">Download on the</span>
-                      <span className="text-base font-semibold">App Store</span>
-                    </div>
-                  </div>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="bg-white text-indigo-700 hover:bg-gray-100 border-none"
-                  aria-label="Get it on Google Play"
-                >
-                  <div className="flex items-center">
-                    <div className="mr-3">
-                      <svg viewBox="0 0 24 24" className="w-7 h-7" fill="currentColor">
-                        <path d="M3 20.5v-17c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v17c0 .83-.67 1.5-1.5 1.5S3 21.33 3 20.5zM16.5 12L9 3v18l7.5-9z" />
-                        <path d="M9.5 7.5v9l8.5 5V2.5z" />
-                      </svg>
-                    </div>
-                    <div className="flex flex-col items-start">
-                      <span className="text-xs">GET IT ON</span>
-                      <span className="text-base font-semibold">Google Play</span>
-                    </div>
-                  </div>
-                </Button>
+              
+              <div className="flex items-start">
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">
+                  <ShieldCheck className="h-6 w-6 text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl mb-2">Secure Travel</h3>
+                  <p className="text-gray-600">Get real-time safety alerts, digital boarding passes, and contactless check-in.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">
+                  <ArrowDownToLine className="h-6 w-6 text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl mb-2">Offline Access</h3>
+                  <p className="text-gray-600">Access your bookings, boarding passes, and trip details even without internet.</p>
+                </div>
               </div>
             </div>
+            
+            <div className="flex flex-wrap gap-4">
+              <Button className="rounded-full py-6 px-6 bg-black text-white hover:bg-gray-800">
+                <div className="flex items-center">
+                  <svg className="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.0001 5.17322C17.6443 4.45987 18.0709 3.47151 17.9998 2.5C17.1108 2.53785 16.1089 3.02338 15.4417 3.75661C14.8334 4.41291 14.3127 5.41227 14.3997 6.36959C15.3891 6.43542 16.3282 5.90323 17.0001 5.17322Z" fill="white"/>
+                    <path d="M20.5001 11.9999C20.5126 9.74075 21.9864 8.32098 22.0001 8.30864C22.0137 8.29629 20.8387 6.41666 19.0689 6.41666C17.2991 6.41666 16.7503 7.59258 15.1689 7.59258C13.5876 7.59258 12.4803 6.42901 11.0501 6.42901C8.77525 6.42901 6.37525 8.32097 6.37525 11.9876C6.37525 14.3086 7.2639 16.7284 8.40139 18.1728C9.37523 19.3704 10.213 20.5 11.413 20.5C12.613 20.5 13.0628 19.6049 14.5566 19.6049C16.0503 19.6049 16.4385 20.5 17.713 20.5C18.9876 20.5 19.7629 19.4815 20.6501 18.3334C21.6876 16.9753 22.1374 15.6543 22.1499 15.6049C22.1251 15.5926 20.4878 14.8766 20.4878 12.037L20.5001 11.9999Z" fill="white"/>
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-xs">Download on the</div>
+                    <div className="text-xl font-semibold">App Store</div>
+                  </div>
+                </div>
+              </Button>
+              
+              <Button className="rounded-full py-6 px-6 bg-black text-white hover:bg-gray-800">
+                <div className="flex items-center">
+                  <svg className="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.43053 3.68081L13.2347 12.0001L4.43053 20.3194C4.16293 20.1199 3.94262 19.8695 3.78323 19.5846C3.62384 19.2996 3.52968 18.9857 3.50636 18.6625C3.48304 18.3392 3.53106 18.0151 3.64709 17.7127C3.76312 17.4103 3.94439 17.1366 4.18053 16.9094L9.09053 12.0001L4.18053 7.09081C3.70553 6.60081 3.43053 5.93081 3.43053 5.25081C3.43053 4.58081 3.69053 3.94081 4.15053 3.44081C4.23531 3.51851 4.32851 3.60226 4.43053 3.69081V3.68081Z" fill="white"/>
+                    <path d="M4.43053 3.68081L13.2347 12.0001L4.43053 20.3194C4.16293 20.1199 3.94262 19.8695 3.78323 19.5846C3.62384 19.2996 3.52968 18.9857 3.50636 18.6625C3.48304 18.3392 3.53106 18.0151 3.64709 17.7127C3.76312 17.4103 3.94439 17.1366 4.18053 16.9094L9.09053 12.0001L4.18053 7.09081C3.70553 6.60081 3.43053 5.93081 3.43053 5.25081C3.43053 4.58081 3.69053 3.94081 4.15053 3.44081C4.23531 3.51851 4.32851 3.60226 4.43053 3.69081V3.68081Z" fill="white"/>
+                    <path d="M4.18 16.91L9.09 12L4.18 7.09C3.9439 6.86279 3.76265 6.58915 3.64664 6.28674C3.53064 5.98434 3.48264 5.66021 3.50597 5.33696C3.52929 5.01371 3.62346 4.69981 3.78285 4.41485C3.94224 4.12989 4.16255 3.87949 4.43014 3.68L15.59 15.29L19.17 13.26C19.9574 12.8136 20.477 12.0001 20.477 11.1001C20.477 10.2001 19.9574 9.38661 19.17 8.94006L15.59 6.91L4.43 18.52C4.16242 18.3205 3.94211 18.0701 3.78272 17.7851C3.62333 17.5002 3.52916 17.1863 3.50584 16.863C3.48252 16.5398 3.53053 16.2157 3.64656 15.9132C3.76259 15.6108 3.94387 15.3372 4.18 15.11V16.91Z" fill="white"/>
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-xs">GET IT ON</div>
+                    <div className="text-xl font-semibold">Google Play</div>
+                  </div>
+                </div>
+              </Button>
+            </div>
           </div>
-
-          <div className="md:w-1/2 flex justify-center">
-            <div className="relative w-64 h-[500px]">
-              <div className="absolute inset-0 bg-black/20 rounded-3xl transform rotate-3"></div>
-              <div className="absolute inset-0 bg-black/20 rounded-3xl transform -rotate-3"></div>
-              <div className="relative bg-black rounded-3xl overflow-hidden w-full h-full p-2">
-                <div className="w-full h-full rounded-2xl overflow-hidden relative">
-                  <Image
-                    src="/placeholder.svg?height=500&width=250"
-                    alt="The Worldz Travel mobile app"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 250px"
-                  />
+          
+          <div className="relative h-[500px] md:h-[600px] flex justify-center">
+            <div className="absolute top-1/2 -translate-y-1/2 w-[250px] md:w-[300px]">
+              <Image 
+                src="/images/app/1.jpg"
+                alt="The Worldz Travel Mobile App"
+                width={300}
+                height={600}
+                className="rounded-[36px] shadow-2xl border-8 border-black"
+              />
+              
+              <div className="absolute -bottom-6 -right-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg">
+                <div className="text-center">
+                  <div className="text-xl font-bold">4.9</div>
+                  <div className="text-xs">★★★★★</div>
+                  <div className="text-[10px] mt-1">10K+ Reviews</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

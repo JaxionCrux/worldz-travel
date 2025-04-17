@@ -1,22 +1,21 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Search } from "lucide-react"
 import type { Airport } from "@/types/module/tripsummary"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AirportSuggestions } from "./airport-suggestions"
+import { searchAirports } from "@/app/actions/airport-actions"
 
-interface AirportSearchProps extends React.ComponentPropsWithoutRef<"div"> {
+interface AirportSearchProps {
   id: string
   label: string
   placeholder?: string
   onSelect: (airport: Airport) => void
   initialValue?: string
   initialCode?: string
+  className?: string
 }
 
 export function AirportSearch({
@@ -28,123 +27,223 @@ export function AirportSearch({
   initialCode = "",
   className,
   ...props
-}: AirportSearchProps) {
+}: AirportSearchProps & Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'>) {
+  // Minimal React state - just for input value tracking
   const [inputValue, setInputValue] = useState(initialValue)
-  const [suggestions, setSuggestions] = useState<Airport[]>([])
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Fetch airports from API
-  const fetchAirports = async (query: string) => {
-    if (query.length < 2) {
-      setSuggestions([])
+  
+  // Use direct DOM manipulation to handle the dropdown
+  useEffect(() => {
+    console.log("Setting up direct DOM manipulation for airport search")
+    
+    if (!containerRef.current || !inputRef.current) {
+      console.error("Required DOM elements not found")
       return
     }
-
-    setIsLoading(true)
-
-    try {
-      // This would be replaced with your actual API call
-      const response = await fetch(`/api/airports?query=${encodeURIComponent(query)}`)
-      const data = await response.json()
-
-      if (data.success) {
-        setSuggestions(data.airports)
-      } else {
-        setSuggestions([])
+    
+    const container = containerRef.current
+    const input = inputRef.current
+    
+    // Create dropdown element
+    let dropdown = document.createElement('div')
+    dropdown.setAttribute('data-testid', 'airport-dropdown')
+    dropdown.className = 'absolute z-50 w-full mt-1 bg-white shadow-lg max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm border border-gray-200'
+    dropdown.style.display = 'none'
+    container.appendChild(dropdown)
+    
+    // Search timeout reference
+    let searchTimeout: NodeJS.Timeout | null = null
+    
+    // Function to perform search and show results
+    const performSearch = async (query: string) => {
+      console.log("Direct DOM: Performing search for", query)
+      
+      if (query.length < 2) {
+        dropdown.style.display = 'none'
+        return
       }
-    } catch (error) {
-      console.error("Error fetching airports:", error)
-      setSuggestions([])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Handle input changes with debounce
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setInputValue(value)
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-
-    if (value.length < 2) {
-      setSuggestions([])
-      setIsDropdownOpen(false)
-      return
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      fetchAirports(value)
-      setIsDropdownOpen(true)
-    }, 200) // 200ms debounce
-  }
-
-  // Handle airport selection
-  const handleSelect = (airport: Airport) => {
-    setInputValue(`${airport.city} (${airport.iata})`)
-    onSelect(airport)
-    setIsDropdownOpen(false)
-    inputRef.current?.blur()
-  }
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
-        setIsDropdownOpen(false)
+      
+      // Show loading state
+      dropdown.style.display = 'block'
+      dropdown.innerHTML = '<div class="px-4 py-2 text-center text-gray-500">Searching...</div>'
+      
+      try {
+        const results = await searchAirports(query)
+        console.log("Direct DOM: Got", results.length, "results")
+        
+        // Handle no results
+        if (results.length === 0) {
+          dropdown.innerHTML = '<div class="px-4 py-2 text-center text-gray-500">No airports found</div>'
+          return
+        }
+        
+        // Create HTML for results
+        dropdown.innerHTML = `
+          <ul class="divide-y divide-gray-200">
+            ${results.map(airport => `
+              <li class="cursor-pointer hover:bg-purple-50 px-4 py-2" 
+                  data-iata="${airport.iata}" 
+                  data-city="${airport.city}"
+                  data-name="${airport.name}"
+                  data-country="${airport.country}"
+                  data-state="${airport.state || ''}">
+                <div class="flex justify-between">
+                  <div class="font-medium">${airport.city}</div>
+                  <div class="text-purple-600 font-bold">${airport.iata}</div>
+                </div>
+                <div class="text-sm text-gray-500">
+                  ${airport.name} • ${airport.country}
+                </div>
+              </li>
+            `).join('')}
+          </ul>
+        `
+        
+        // Add click handlers to each result
+        dropdown.querySelectorAll('li').forEach(li => {
+          li.addEventListener('click', () => {
+            const iata = li.getAttribute('data-iata') || ''
+            const city = li.getAttribute('data-city') || ''
+            const name = li.getAttribute('data-name') || ''
+            const country = li.getAttribute('data-country') || ''
+            const state = li.getAttribute('data-state') || ''
+            
+            // Update input value
+            setInputValue(`${city} (${iata})`)
+            input.value = `${city} (${iata})`
+            
+            // Call the onSelect handler
+            onSelect({
+              iata,
+              name,
+              city,
+              country,
+              state: state || undefined
+            })
+            
+            // Hide dropdown
+            dropdown.style.display = 'none'
+          })
+        })
+        
+      } catch (error) {
+        console.error("Direct DOM: Search error", error)
+        dropdown.innerHTML = '<div class="px-4 py-2 text-center text-gray-500">Error searching airports</div>'
       }
     }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
-
-  // Clean up timeout on unmount
-  useEffect(() => {
+    
+    // Input event handler - triggered on every keystroke
+    const handleInput = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      const query = target.value
+      console.log("Direct DOM: Input event", query)
+      
+      // Update React state for controlled input
+      setInputValue(query)
+      
+      // Clear existing timeout
+      if (searchTimeout) {
+        clearTimeout(searchTimeout)
+      }
+      
+      // Handle empty/short query
+      if (query.length < 2) {
+        dropdown.style.display = 'none'
+        return
+      }
+      
+      // Show loading state immediately
+      dropdown.style.display = 'block'
+      dropdown.innerHTML = '<div class="px-4 py-2 text-center text-gray-500">Searching...</div>'
+      
+      // Debounce search
+      searchTimeout = setTimeout(() => {
+        performSearch(query)
+      }, 300)
+    }
+    
+    // Focus event handler
+    const handleFocus = () => {
+      console.log("Direct DOM: Focus event")
+      const query = input.value
+      
+      // Only show dropdown if we have enough characters
+      if (query.length >= 2) {
+        // If dropdown has content, show it
+        if (dropdown.children.length > 0 && dropdown.innerHTML.trim() !== '') {
+          dropdown.style.display = 'block'
+        } else {
+          // Otherwise perform new search
+          performSearch(query)
+        }
+      }
+    }
+    
+    // Document click handler to close dropdown when clicking outside
+    const handleDocumentClick = (e: MouseEvent) => {
+      if (!container.contains(e.target as Node)) {
+        dropdown.style.display = 'none'
+      }
+    }
+    
+    // Add all event listeners
+    input.addEventListener('input', handleInput)
+    input.addEventListener('focus', handleFocus)
+    document.addEventListener('click', handleDocumentClick)
+    
+    // Initialize with search if we have an initial value
+    if (initialValue && initialValue.length >= 2) {
+      console.log("Direct DOM: Initial search for", initialValue)
+      performSearch(initialValue)
+    }
+    
+    // Clean up all event listeners and DOM elements on unmount
     return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
+      console.log("Direct DOM: Cleaning up")
+      input.removeEventListener('input', handleInput)
+      input.removeEventListener('focus', handleFocus)
+      document.removeEventListener('click', handleDocumentClick)
+      
+      if (searchTimeout) {
+        clearTimeout(searchTimeout)
+      }
+      
+      if (dropdown && dropdown.parentNode) {
+        dropdown.parentNode.removeChild(dropdown)
       }
     }
-  }, [])
-
+  }, [onSelect, initialValue]) // Dependencies
+  
+  // Handle React controlled input value change
+  const handleControlledInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+  }
+  
   return (
-    <div className={cn("relative", className)} {...props}>
+    <div ref={containerRef} className={cn("relative w-full", className)} {...props}>
       <Label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
         {label}
       </Label>
+      
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="h-4 w-4 text-gray-400" />
         </div>
+        
         <Input
           id={id}
           ref={inputRef}
+          data-testid="airport-input"
           type="text"
           placeholder={placeholder}
           value={inputValue}
-          onChange={handleInputChange}
-          onFocus={() => inputValue.length >= 2 && setIsDropdownOpen(true)}
+          onChange={handleControlledInputChange}
           className="pl-10 pr-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-          autoComplete="off"
         />
-        {isLoading && (
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <div className="animate-spin h-4 w-4 border-2 border-gray-500 border-t-transparent rounded-full" />
-          </div>
-        )}
       </div>
-
-      {isDropdownOpen && (
-        <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden">
-          <AirportSuggestions suggestions={suggestions} inputValue={inputValue} onSelect={handleSelect} />
-        </div>
-      )}
+      
+      {/* No dropdown in JSX - it's created and managed directly in the DOM */}
     </div>
   )
 }

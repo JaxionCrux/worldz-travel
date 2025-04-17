@@ -18,6 +18,7 @@ interface PassengersSelectorProps {
   cabinClass: string
   onCabinClassChange: (value: string) => void
   className?: string
+  showLabel?: boolean
 }
 
 export function PassengersSelector({
@@ -30,47 +31,65 @@ export function PassengersSelector({
   cabinClass,
   onCabinClassChange,
   className,
+  showLabel = false
 }: PassengersSelectorProps) {
   const [open, setOpen] = useState(false)
 
   const formatPassengers = () => {
     const totalPassengers = adults + children + infants;
-    const cabinText = cabinClass
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+    
+    let cabinDisplay = "";
+    switch (cabinClass) {
+      case "economy":
+        cabinDisplay = "Economy";
+        break;
+      case "premium_economy":
+        cabinDisplay = "Premium Economy";
+        break;
+      case "business":
+        cabinDisplay = "Business";
+        break;
+      case "first":
+        cabinDisplay = "First Class";
+        break;
+      default:
+        cabinDisplay = "Economy";
+    }
     
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <span>{totalPassengers} {totalPassengers === 1 ? "Traveler" : "Travelers"}</span>
-        <Badge variant="outline" className="font-normal text-xs">{cabinText}</Badge>
+        <span className="text-gray-400 mx-1">•</span>
+        <span className="text-gray-500">{cabinDisplay}</span>
       </div>
     );
   }
 
   return (
     <div className={className}>
-      <div className="text-sm font-medium text-gray-500 mb-1">Travelers & Class</div>
+      {showLabel && <div className="text-sm font-medium text-gray-500 mb-1">Travelers & Class</div>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="flex items-center w-full p-4 text-left bg-white rounded-lg border border-gray-200 shadow-sm hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="flex items-center w-full h-10 px-3 text-left bg-transparent rounded-md hover:bg-gray-50 focus:outline-none transition-all text-sm"
           >
-            <User className="w-5 h-5 mr-2 text-blue-500" />
-            <div className="font-medium text-gray-900 flex-1">{formatPassengers()}</div>
+            <User className="w-4 h-4 mr-2 text-gray-500" />
+            <div className="flex-1">
+              {formatPassengers()}
+            </div>
             <ChevronDown className="w-4 h-4 text-gray-400" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-5" align="end">
-          <div className="space-y-6">
+        <PopoverContent className="w-80 p-4" align="start">
+          <div className="space-y-4">
             <div>
-              <h4 className="font-medium mb-4 text-lg flex items-center">
+              <h4 className="font-medium mb-3 text-base flex items-center">
                 <User className="w-4 h-4 mr-2 text-blue-500" />
                 Travelers
               </h4>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Adults</div>
@@ -171,7 +190,7 @@ export function PassengersSelector({
             <Separator />
 
             <div>
-              <h4 className="font-medium mb-4 text-lg flex items-center">
+              <h4 className="font-medium mb-3 text-base flex items-center">
                 <Plane className="w-4 h-4 mr-2 text-blue-500" />
                 Cabin Class
               </h4>

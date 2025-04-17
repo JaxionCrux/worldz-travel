@@ -1,172 +1,184 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { StarIcon, Quote } from "lucide-react"
 
 export function Testimonials() {
-  const isMobile = useMediaQuery("(max-width: 768px)")
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [autoplay, setAutoplay] = useState(true)
+  const [activeIndex, setActiveIndex] = useState(0)
 
-  // Testimonials data
   const testimonials = [
     {
       id: 1,
       name: "Sarah Johnson",
       location: "New York, USA",
-      avatar: "/placeholder.svg?height=100&width=100",
+      text: "I've used many travel services before, but this airline truly stands out. Their customer service was exceptional from booking to return. When my flight was delayed, they proactively helped me reschedule without any hassle.",
       rating: 5,
-      text: "The Worldz Travel made booking my family vacation so easy! The flexible payment options were a lifesaver, and their customer service was exceptional when we needed to make last-minute changes.",
-      date: "May 15, 2025",
+      avatar: "/images/avatars/1.jpg",
+      date: "March 15, 2023",
     },
     {
       id: 2,
-      name: "David Chen",
+      name: "Michael Chen",
       location: "Toronto, Canada",
-      avatar: "/placeholder.svg?height=100&width=100",
+      text: "The ability to pay in installments made my dream vacation possible. The process was smooth, transparent, and the interest rates were surprisingly reasonable. I'll definitely book with them again for my next trip!",
       rating: 5,
-      text: "I've been using The Worldz Travel for all my business trips for the past year. Their platform is intuitive, prices are competitive, and the loyalty program offers great benefits. Highly recommended!",
-      date: "April 22, 2025",
+      avatar: "/images/avatars/2.jpg",
+      date: "April 22, 2023",
     },
     {
       id: 3,
-      name: "Emma Rodriguez",
+      name: "Emily Rodriguez",
       location: "London, UK",
-      avatar: "/placeholder.svg?height=100&width=100",
+      text: "What impressed me most was the value for money. I found flights that were significantly cheaper than other websites, and the experience was still top-notch. Their price match guarantee gives me confidence I'm getting the best deal.",
       rating: 4,
-      text: "My experience with The Worldz Travel has been mostly positive. Their app is convenient for booking on the go, and I appreciate the 24/7 customer support. The only reason for 4 stars is a slight delay in refund processing.",
-      date: "March 10, 2025",
+      avatar: "/images/avatars/3.jpg",
+      date: "May 9, 2023",
     },
     {
       id: 4,
-      name: "Michael Kim",
-      location: "Seoul, South Korea",
-      avatar: "/placeholder.svg?height=100&width=100",
+      name: "James Wilson",
+      location: "Sydney, Australia",
+      text: "As someone who travels frequently for business, I appreciate the streamlined booking process and the ability to store my preferences. Their mobile app is intuitive and makes managing bookings on the go incredibly simple.",
       rating: 5,
-      text: "As a frequent traveler, I've tried many booking platforms, but The Worldz Travel stands out for their transparent pricing and excellent rewards program. I've saved thousands on my travels this year alone!",
-      date: "February 28, 2025",
+      avatar: "/images/avatars/4.jpg",
+      date: "June 18, 2023",
     },
     {
       id: 5,
-      name: "Olivia Patel",
-      location: "Sydney, Australia",
-      avatar: "/placeholder.svg?height=100&width=100",
+      name: "Sophia Patel",
+      location: "Mumbai, India",
+      text: "They found me a last-minute flight during peak season when every other service showed no availability. Their customer service team went above and beyond to make sure my family and I could attend our relative's wedding.",
       rating: 5,
-      text: "I was skeptical about using a new booking platform, but The Worldz Travel exceeded all my expectations. Their price match guarantee saved me money, and the booking process was seamless from start to finish.",
-      date: "January 15, 2025",
+      avatar: "/images/avatars/5.jpg",
+      date: "July 3, 2023",
     },
   ]
 
-  const visibleTestimonials = isMobile
-    ? testimonials.slice(currentSlide, currentSlide + 1)
-    : testimonials.slice(currentSlide, currentSlide + 3)
+  const nextTestimonial = useCallback(() => {
+    setActiveIndex((current) => (current + 1) % testimonials.length)
+  }, [testimonials.length])
 
-  const nextSlide = () => {
-    const maxSlide = isMobile ? testimonials.length - 1 : testimonials.length - 3
-    setCurrentSlide(currentSlide === maxSlide ? 0 : currentSlide + 1)
-    setAutoplay(false)
-  }
+  const prevTestimonial = useCallback(() => {
+    setActiveIndex((current) => (current - 1 + testimonials.length) % testimonials.length)
+  }, [testimonials.length])
 
-  const prevSlide = () => {
-    const maxSlide = isMobile ? testimonials.length - 1 : testimonials.length - 3
-    setCurrentSlide(currentSlide === 0 ? maxSlide : currentSlide - 1)
-    setAutoplay(false)
-  }
-
-  // Autoplay functionality
+  // Auto advance testimonials
   useEffect(() => {
-    if (!autoplay) return
-
     const interval = setInterval(() => {
-      const maxSlide = isMobile ? testimonials.length - 1 : testimonials.length - 3
-      setCurrentSlide(currentSlide === maxSlide ? 0 : currentSlide + 1)
-    }, 5000)
-
+      nextTestimonial()
+    }, 8000)
     return () => clearInterval(interval)
-  }, [currentSlide, autoplay, isMobile, testimonials.length])
+  }, [nextTestimonial])
 
   return (
     <div className="relative">
-      <div className="flex justify-between absolute -top-16 right-0">
-        <Button
-          variant="outline"
-          size="icon"
-          className="mr-2 rounded-full"
-          onClick={prevSlide}
-          aria-label="Previous testimonials"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-full"
-          onClick={nextSlide}
-          aria-label="Next testimonials"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">What Our Travelers Say</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Discover why thousands of travelers choose us for their journeys around the world
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {visibleTestimonials.map((testimonial) => (
-          <Card key={testimonial.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden mr-4">
-                  <Image
-                    src={testimonial.avatar || "/placeholder.svg"}
-                    alt={testimonial.name}
-                    fill
-                    className="object-cover"
-                    sizes="48px"
-                  />
+        <div className="relative">
+          <div className="overflow-hidden">
+            <div 
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+            >
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="w-full flex-shrink-0 px-4"
+                >
+                  <Card className="bg-white shadow-md hover:shadow-lg transition-shadow border border-indigo-100">
+                    <CardContent className="p-8">
+                      <div className="flex flex-col md:flex-row items-center gap-6">
+                        <div className="flex-shrink-0 text-center md:text-left">
+                          <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-indigo-100">
+                            <Image
+                              src={testimonial.avatar}
+                              alt={testimonial.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <h3 className="font-bold text-xl">{testimonial.name}</h3>
+                          <p className="text-gray-500 text-sm">{testimonial.location}</p>
+                          
+                          <div className="flex items-center justify-center md:justify-start mt-3">
+                            {[...Array(5)].map((_, i) => (
+                              <StarIcon
+                                key={i}
+                                className={`w-5 h-5 ${
+                                  i < testimonial.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="flex-1">
+                          <div className="relative">
+                            <Quote className="absolute -top-2 -left-2 w-8 h-8 text-indigo-200 rotate-180" />
+                            <blockquote className="text-gray-700 italic px-6 py-1">
+                              {testimonial.text}
+                            </blockquote>
+                            <Quote className="absolute -bottom-2 -right-2 w-8 h-8 text-indigo-200" />
+                          </div>
+                          <p className="text-sm text-gray-500 text-right mt-4">{testimonial.date}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-                <div>
-                  <h3 className="font-semibold">{testimonial.name}</h3>
-                  <p className="text-sm text-gray-600">{testimonial.location}</p>
-                </div>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              <div className="flex mb-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-4 h-4 ${
-                      i < testimonial.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-white shadow-md border border-gray-200 z-10 rounded-full hidden md:flex"
+            onClick={prevTestimonial}
+            aria-label="Previous testimonial"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </Button>
 
-              <p className="text-gray-700 mb-4 line-clamp-4">{testimonial.text}</p>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-white shadow-md border border-gray-200 z-10 rounded-full hidden md:flex"
+            onClick={nextTestimonial}
+            aria-label="Next testimonial"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Button>
+        </div>
 
-              <p className="text-sm text-gray-500">{testimonial.date}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Mobile pagination indicators */}
-      {isMobile && (
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-8">
           {testimonials.map((_, index) => (
-            <button
+            <Button
               key={index}
-              className={`w-2 h-2 rounded-full mx-1 ${index === currentSlide ? "bg-indigo-600" : "bg-gray-300"}`}
-              onClick={() => {
-                setCurrentSlide(index)
-                setAutoplay(false)
-              }}
-              aria-label={`Go to testimonial ${index + 1}`}
+              variant="ghost"
+              size="sm"
+              className={`w-3 h-3 p-0 rounded-full mx-1 ${
+                index === activeIndex ? "bg-indigo-600" : "bg-gray-300"
+              }`}
+              onClick={() => setActiveIndex(index)}
+              aria-label={`View testimonial ${index + 1}`}
             />
           ))}
         </div>
-      )}
+      </div>
     </div>
   )
 }

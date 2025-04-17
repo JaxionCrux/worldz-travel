@@ -12,6 +12,9 @@ interface AirportSuggestionsProps {
 }
 
 export function AirportSuggestions({ suggestions, inputValue, onSelect }: AirportSuggestionsProps) {
+  console.log("AirportSuggestions received:", suggestions.length, "suggestions")
+  console.log("First suggestion sample:", suggestions.length > 0 ? suggestions[0] : 'none')
+
   const [focusedIndex, setFocusedIndex] = useState<number>(-1)
   const [groupedAirports, setGroupedAirports] = useState<AirportGroup[]>([])
   const [flattenedResults, setFlattenedResults] = useState<

@@ -3,168 +3,122 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { ChevronLeft, ChevronRight, Calendar, Star } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { ArrowRight } from "lucide-react"
 
 export function FeaturedDestinations() {
-  const isMobile = useMediaQuery("(max-width: 768px)")
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [viewAll, setViewAll] = useState(false)
 
-  // Featured destinations data
   const destinations = [
     {
       id: 1,
-      city: "Paris",
-      country: "France",
-      image: "/placeholder.svg?height=400&width=600",
-      price: "499",
-      rating: 4.8,
-      discount: "15% OFF",
-      description: "Experience the city of love with its iconic landmarks and world-class cuisine.",
-      departureDate: "Jun 15 - Jun 22",
+      city: "New York",
+      country: "United States",
+      description: "Experience the vibrant culture and iconic landmarks of the Big Apple.",
+      price: "399",
+      discount: "20%",
+      image: "/images/destinations/1.jpg",
+      popular: true,
     },
     {
       id: 2,
-      city: "Tokyo",
-      country: "Japan",
-      image: "/placeholder.svg?height=400&width=600",
-      price: "799",
-      rating: 4.9,
-      discount: "10% OFF",
-      description: "Discover the perfect blend of traditional culture and futuristic innovation.",
-      departureDate: "Jul 10 - Jul 20",
+      city: "London",
+      country: "United Kingdom",
+      description: "Discover the historic charm and modern energy of England's capital.",
+      price: "499",
+      discount: null,
+      image: "/images/destinations/2.jpg",
+      popular: true,
     },
     {
       id: 3,
-      city: "Bali",
-      country: "Indonesia",
-      image: "/placeholder.svg?height=400&width=600",
-      price: "649",
-      rating: 4.7,
-      discount: null,
-      description: "Relax on pristine beaches and immerse yourself in rich cultural experiences.",
-      departureDate: "Aug 5 - Aug 15",
+      city: "Tokyo",
+      country: "Japan",
+      description: "Immerse yourself in the perfect blend of tradition and innovation.",
+      price: "799",
+      discount: "15%",
+      image: "/images/destinations/3.jpg",
+      popular: false,
     },
     {
       id: 4,
-      city: "New York",
-      country: "USA",
-      image: "/placeholder.svg?height=400&width=600",
-      price: "399",
-      rating: 4.6,
-      discount: "20% OFF",
-      description: "Explore the city that never sleeps with its iconic skyline and vibrant neighborhoods.",
-      departureDate: "Sep 12 - Sep 19",
+      city: "Dubai",
+      country: "United Arab Emirates",
+      description: "Experience luxury and adventure in this stunning desert metropolis.",
+      price: "649",
+      discount: "10%",
+      image: "/images/destinations/4.jpg",
+      popular: true,
     },
     {
       id: 5,
-      city: "Cape Town",
-      country: "South Africa",
-      image: "/placeholder.svg?height=400&width=600",
-      price: "749",
-      rating: 4.8,
+      city: "Paris",
+      country: "France",
+      description: "Fall in love with the romance, art, and cuisine of the City of Light.",
+      price: "449",
       discount: null,
-      description: "Experience breathtaking landscapes and diverse wildlife in this coastal gem.",
-      departureDate: "Oct 8 - Oct 18",
+      image: "/images/destinations/5.jpg",
+      popular: false,
     },
     {
       id: 6,
-      city: "Barcelona",
-      country: "Spain",
-      image: "/placeholder.svg?height=400&width=600",
-      price: "549",
-      rating: 4.7,
-      discount: "12% OFF",
-      description: "Enjoy stunning architecture, beautiful beaches, and delicious Mediterranean cuisine.",
-      departureDate: "Nov 15 - Nov 22",
+      city: "Bali",
+      country: "Indonesia",
+      description: "Relax on pristine beaches and explore the rich cultural heritage.",
+      price: "599",
+      discount: "25%",
+      image: "/images/destinations/6.jpg",
+      popular: true,
     },
   ]
 
-  const visibleDestinations = isMobile
-    ? destinations.slice(currentSlide, currentSlide + 1)
-    : destinations.slice(currentSlide, currentSlide + 3)
-
-  const nextSlide = () => {
-    const maxSlide = isMobile ? destinations.length - 1 : destinations.length - 3
-    setCurrentSlide(currentSlide === maxSlide ? 0 : currentSlide + 1)
-  }
-
-  const prevSlide = () => {
-    const maxSlide = isMobile ? destinations.length - 1 : destinations.length - 3
-    setCurrentSlide(currentSlide === 0 ? maxSlide : currentSlide - 1)
-  }
+  const displayDestinations = viewAll ? destinations : destinations.slice(0, 3)
 
   return (
-    <div className="relative">
-      <div className="flex justify-between absolute -top-16 right-0">
-        <Button
-          variant="outline"
-          size="icon"
-          className="mr-2 rounded-full"
-          onClick={prevSlide}
-          aria-label="Previous destinations"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-full"
-          onClick={nextSlide}
-          aria-label="Next destinations"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {visibleDestinations.map((destination) => (
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {displayDestinations.map((destination) => (
           <Card key={destination.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <div className="relative h-48 w-full">
-              <Image
-                src={destination.image || "/placeholder.svg"}
-                alt={`${destination.city}, ${destination.country}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-              {destination.discount && (
-                <Badge className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-                  {destination.discount}
-                </Badge>
-              )}
-            </div>
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="text-xl font-bold">{destination.city}</h3>
-                  <p className="text-gray-600">{destination.country}</p>
-                </div>
-                <div className="flex items-center">
-                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1" />
-                  <span className="text-sm font-medium">{destination.rating}</span>
-                </div>
+            <CardContent className="p-0">
+              <div className="relative h-48 w-full">
+                <Image
+                  src={destination.image}
+                  alt={`${destination.city}, ${destination.country}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority
+                />
+                {destination.discount && (
+                  <Badge className="absolute top-4 left-4 bg-red-500 text-white hover:bg-red-600">
+                    {destination.discount} OFF
+                  </Badge>
+                )}
+                {destination.popular && (
+                  <Badge className="absolute top-4 right-4 bg-amber-500 text-white hover:bg-amber-600">
+                    Popular
+                  </Badge>
+                )}
               </div>
-
-              <p className="text-gray-600 mb-4 line-clamp-2">{destination.description}</p>
-
-              <div className="flex items-center text-sm text-gray-500 mb-4">
-                <Calendar className="w-4 h-4 mr-1" />
-                <span>{destination.departureDate}</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <div>
-                  <span className="text-sm text-gray-500">From</span>
-                  <p className="text-2xl font-bold text-indigo-700">${destination.price}</p>
+              <div className="p-5">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-xl font-bold">{destination.city}</h3>
+                    <p className="text-gray-500">{destination.country}</p>
+                  </div>
+                  <div className="text-lg font-bold text-indigo-700">
+                    From ${destination.price}
+                  </div>
                 </div>
+                <p className="text-gray-600 mb-4">{destination.description}</p>
                 <Button
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  aria-label={`Book flights to ${destination.city}`}
+                  variant="outline"
+                  className="w-full flex items-center justify-center"
+                  aria-label={`Explore flights to ${destination.city}`}
                 >
-                  Book Now
+                  <span>Explore Flights</span>
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </CardContent>
@@ -172,17 +126,15 @@ export function FeaturedDestinations() {
         ))}
       </div>
 
-      {/* Mobile pagination indicators */}
-      {isMobile && (
-        <div className="flex justify-center mt-6">
-          {destinations.map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full mx-1 ${index === currentSlide ? "bg-indigo-600" : "bg-gray-300"}`}
-              onClick={() => setCurrentSlide(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+      {!viewAll && destinations.length > 3 && (
+        <div className="text-center mt-8">
+          <Button
+            variant="outline"
+            onClick={() => setViewAll(true)}
+            className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+          >
+            View All Destinations
+          </Button>
         </div>
       )}
     </div>
