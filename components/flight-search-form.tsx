@@ -11,12 +11,12 @@ import { Button } from "@/components/ui/button"
 import { searchAirports } from "@/app/actions/airport-actions"
 import { searchFlightsAction } from "@/app/actions/flight-actions"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { SimpleAirportSearch } from './SimpleAirportSearch'
+import { SimpleAirportSearch } from '@/components/SimpleAirportSearch'
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { PassengersSelector } from "@/components/passengers-selector"
 import { DateRange } from "react-day-picker"
-import { AirportSearchWrapper } from './AirportSearchWrapper'
+import { AirportSearchWrapper } from '@/components/AirportSearchWrapper'
 
 declare global {
   interface Window {
